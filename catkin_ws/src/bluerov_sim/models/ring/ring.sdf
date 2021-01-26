@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
   <model name='ring'>
-    <link name='link_0'>
+    <link name='base_link'>
       <gravity>0</gravity>
       <inertial>
         <mass>1</mass>
@@ -15,7 +15,7 @@
         </inertia>
       </inertial>
       <pose frame=''>4e-06 -0 0 0 -0 0</pose>
-      <visual name='visual'>
+      <visual name='base_link_visual'>
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -91,6 +91,107 @@
         </surface>
       </collision>
     </link>
+
+    <link name="tag0_link">
+      <gravity>0</gravity>
+      <pose>0.12 0.12 0.015 0 0 0</pose>
+      <visual name="tag0_visual">
+        <material>
+          <script>
+            <uri>model://tag36_11_00000/materials/scripts</uri>
+            <uri>model://tag36_11_00000/materials/textures</uri>
+            <name>tag36_11_00000/Image</name>
+          </script>
+        </material>
+        <geometry>
+          <mesh>
+            <uri>model://tag36_11_00000/meshes/cube.dae</uri>
+            <scale>0.12 0.12 0.005</scale>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+
+    <joint name="tag0_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>tag0_link</child>
+  </joint>
+
+  <link name="tag1_link">
+    <gravity>0</gravity>
+    <pose>-0.12 0.12 0.015 0 0 0</pose>
+    <visual name="tag1_visual">
+      <material>
+        <script>
+          <uri>model://tag36_11_00001/materials/scripts</uri>
+          <uri>model://tag36_11_00001/materials/textures</uri>
+          <name>tag36_11_00001/Image</name>
+        </script>
+      </material>
+      <geometry>
+        <mesh>
+          <uri>model://tag36_11_00001/meshes/cube.dae</uri>
+          <scale>0.12 0.12 0.005</scale>
+        </mesh>
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="tag1_joint" type="fixed">
+    <parent>base_link</parent>
+    <child>tag1_link</child>
+</joint>
+
+<link name="tag2_link">
+  <gravity>0</gravity>
+  <pose>-0.12 -0.12 0.015 0 0 0</pose>
+  <visual name="tag2_visual">
+    <material>
+      <script>
+        <uri>model://tag36_11_00002/materials/scripts</uri>
+        <uri>model://tag36_11_00002/materials/textures</uri>
+        <name>tag36_11_00002/Image</name>
+      </script>
+    </material>
+    <geometry>
+      <mesh>
+        <uri>model://tag36_11_00002/meshes/cube.dae</uri>
+        <scale>0.12 0.12 0.005</scale>
+      </mesh>
+    </geometry>
+  </visual>
+</link>
+
+<joint name="tag2_joint" type="fixed">
+  <parent>base_link</parent>
+  <child>tag2_link</child>
+</joint>
+
+<link name="tag3_link">
+  <gravity>0</gravity>
+  <pose>0.12 -0.12 0.015 0 0 0</pose>
+  <visual name="tag3_visual">
+    <material>
+      <script>
+        <uri>model://tag36_11_00003/materials/scripts</uri>
+        <uri>model://tag36_11_00003/materials/textures</uri>
+        <name>tag36_11_00003/Image</name>
+      </script>
+    </material>
+    <geometry>
+      <mesh>
+        <uri>model://tag36_11_00003/meshes/cube.dae</uri>
+        <scale>0.12 0.12 0.005</scale>
+      </mesh>
+    </geometry>
+  </visual>
+</link>
+
+<joint name="tag3_joint" type="fixed">
+  <parent>base_link</parent>
+  <child>tag3_link</child>
+</joint>
+
     <static>0</static>
     <allow_auto_disable>1</allow_auto_disable>
   </model>

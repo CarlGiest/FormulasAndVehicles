@@ -1,0 +1,29 @@
+{
+    ////////////////////////////////////////////////////////////////////////////
+    // Some Python specific settings ///////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    "python.pythonPath": "/usr/bin/python",
+    "python.languageServer": "Microsoft",
+    // configure the python formatter
+    "python.formatting.provider": "yapf",
+    "python.formatting.yapfArgs": [
+        "--style={based_on_style: pep8, column_limit: 80}"
+    ],
+    // use flake8 as linter instead of the default pylint
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    // configure the c/c++ formatter
+    "C_Cpp.clang_format_fallbackStyle": "Google",
+    "files.insertFinalNewline": true,
+    // format and validate yaml files
+    "yaml.format.enable": true,
+    "yaml.validate": true,
+    "python.autoComplete.extraPaths": [
+        "/home/carl/fav/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/home/carl/AltesNeuland/Code/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/home/carl/catkin_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ],
+    "cmake.configureOnOpen": true,
+}

@@ -1,0 +1,15 @@
+<launch>
+
+    <include file="$(find bluerov_sim)/launch/gazebo_base.launch"/>
+
+    <include file="$(find bluerov_sim)/launch/spawn_vehicle.launch">
+        <arg name="z" value="-0.2"/>
+    </include>
+
+    <node name="mixer" pkg="depth_controller" type="mixer.py" output="screen" />
+  
+      <!-- Add your own nodes here -->
+    <node name="depth_calculator" pkg="depth_controller" type="pressureToDepth.py" output="screen"/>
+
+    <node name="depth_controller" pkg="depth_controller" type="depth_controller.py" output="screen"/>
+</launch>

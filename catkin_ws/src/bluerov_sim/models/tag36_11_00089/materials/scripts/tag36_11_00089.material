@@ -1,0 +1,21 @@
+
+material tag36_11_00089/Image
+{
+    technique
+    {
+        pass
+        {
+            ambient 0.5 0.5 0.5 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.03 0.03 0.03 1.0
+
+            texture_unit
+            {
+                texture tag36_11_00089.png
+                tex_address_mode clamp
+                filtering none
+            }
+        }
+
+    }
+}

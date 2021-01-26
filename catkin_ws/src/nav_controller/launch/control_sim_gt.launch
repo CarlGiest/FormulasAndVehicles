@@ -1,0 +1,28 @@
+<launch>
+    <!-- <arg name="doArm" default="False" /> -->
+
+
+    <include file="$(find bluerov_sim)/launch/assignment_3.launch">
+        <arg name="gui" value="false"/>
+    </include>
+
+    <node name="strategy_planer" pkg="nav_controller" type="strategy_planer.py" output="screen">
+        <param name="doArm" type="bool" value="True"/>
+    </node>
+
+    <node name="yaw_translator" pkg="nav_controller" type="yaw_translator.py" output="screen">
+        <param name="isSim" type="bool" value="True"/>
+    </node>
+
+    <node name="mixer" pkg="depth_controller" type="mixer.py" output="screen" />
+
+    <node name="pos_setpoint" pkg="nav_controller" type="pos_setpoint.py" output="screen" />
+    
+    <node name="depth_calculator" pkg="depth_controller" type="pressureToDepth.py" output="screen"/>
+
+    <node name="trans_control" pkg="nav_controller" type="trans_control.py" output="screen"/>
+    <node name="rot_control" pkg="nav_controller" type="rot_control.py" output="screen"/>
+
+    <node name="ground_truth_compare" pkg="nav_controller" type="ground_truth_compare.py" output="screen"/> 
+
+</launch>

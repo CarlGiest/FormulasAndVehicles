@@ -1,0 +1,9 @@
+<launch>
+    <arg name="sim" default="True" />
+
+    <!-- **Magic** Range Sensor -->
+    <node pkg="range_sensor" type="range_sensor_node.py" name="range_sensor" output="screen">
+        <param name="sim" type="bool" value="$(arg sim)" />
+    </node>
+
+</launch>

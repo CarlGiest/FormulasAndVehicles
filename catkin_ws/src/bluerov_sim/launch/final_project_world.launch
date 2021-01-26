@@ -1,0 +1,43 @@
+<launch>
+    <!-- Vehicle spawn position -->
+    <arg name="x_Vehicle" default="0.7" />
+    <arg name="y_Vehicle" default="2.0" />
+    <arg name="z_Vehicle" default="-0.7" />
+    <arg name="P_Vehicle" default="0.0" />
+    <arg name="R_Vehicle" default="0.0" />
+    <arg name="Y_Vehicle" default="0.0" />
+    <arg name="camera" default="false" />
+
+    <!-- Ring spawn position and sim settings-->
+    <arg name="x_Ring" default="1" />
+    <arg name="y_Ring" default="3" />
+    <arg name="z_Ring" default="-0.5" />
+    <arg name="R_Ring" default="1.5677" />
+    <arg name="P_Ring" default="0" />
+    <arg name="Y_Ring" default="0" />
+    <arg name="gui" default="true"/>
+    <arg name="paused" default="true" />
+
+    <include file="$(find bluerov_sim)/launch/gazebo_tags_ring.launch"> 
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="paused" value="$(arg paused)" />
+        <arg name="x" value="$(arg x_Ring)" />
+        <arg name="y" value="$(arg y_Ring)" />
+        <arg name="z" value="$(arg z_Ring)" />
+        <arg name="R" default="$(arg R_Ring)" />
+        <arg name="P" default="$(arg P_Ring)" />
+        <arg name="Y" default="$(arg Y_Ring)" />
+    </include>
+
+    <!-- spawn BlueROV model -->
+    <include file="$(find bluerov_sim)/launch/spawn_vehicle.launch">
+        <arg name="camera" value="$(arg camera)" />
+        <arg name="x" value="$(arg x_Vehicle)" />
+        <arg name="y" value="$(arg y_Vehicle)" />
+        <arg name="z" value="$(arg z_Vehicle)" />
+        <arg name="R" default="$(arg R_Vehicle)" />
+        <arg name="P" default="$(arg P_Vehicle)" />
+        <arg name="Y" default="$(arg Y_Vehicle)" />
+    </include>
+    
+</launch>

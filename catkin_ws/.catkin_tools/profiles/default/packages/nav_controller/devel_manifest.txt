@@ -1,0 +1,5 @@
+nav_controller
+/home/carl/Uni/fav/catkin_ws/devel/.private/nav_controller/cmake.lock /home/carl/Uni/fav/catkin_ws/devel/./cmake.lock
+/home/carl/Uni/fav/catkin_ws/devel/.private/nav_controller/lib/pkgconfig/nav_controller.pc /home/carl/Uni/fav/catkin_ws/devel/lib/pkgconfig/nav_controller.pc
+/home/carl/Uni/fav/catkin_ws/devel/.private/nav_controller/share/nav_controller/cmake/nav_controllerConfig.cmake /home/carl/Uni/fav/catkin_ws/devel/share/nav_controller/cmake/nav_controllerConfig.cmake
+/home/carl/Uni/fav/catkin_ws/devel/.private/nav_controller/share/nav_controller/cmake/nav_controllerConfig-version.cmake /home/carl/Uni/fav/catkin_ws/devel/share/nav_controller/cmake/nav_controllerConfig-version.cmake

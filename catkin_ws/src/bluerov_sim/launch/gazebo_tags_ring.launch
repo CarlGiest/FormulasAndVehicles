@@ -1,0 +1,22 @@
+<launch>
+    <arg name="gui" default="true" />
+    <arg name="paused" default="true" />
+
+    <arg name="x" default="1" />
+    <arg name="y" default="3" />
+    <arg name="z" default="-0.5" />
+    <arg name="R" default="1.5677" />
+    <arg name="P" default="0" />
+    <arg name="Y" default="0" />
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find bluerov_sim)/worlds/tank_with_tags.world" />
+        <arg name="verbose" value="true" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="paused" value="$(arg paused)" />
+    </include>
+
+    <node name="ring_spawner" output="screen" pkg="gazebo_ros" type="spawn_model" 
+    args="-sdf -file $(find bluerov_sim)/models/ring/ring.sdf 
+    -model ring -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg R) -P $(arg P) -Y $(arg Y)" />
+</launch>

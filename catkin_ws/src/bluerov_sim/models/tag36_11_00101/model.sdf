@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="tag36_11_00101">
+    <static>true</static>
+    <link name="base_link">
+      <visual name="visual">
+        <material>
+          <script>
+            <uri>model://tag36_11_00101/materials/scripts</uri>
+            <uri>model://tag36_11_00101/materials/textures</uri>
+            <name>tag36_11_00101/Image</name>
+          </script>
+        </material>
+        <geometry>
+          <mesh>
+            <uri>model://tag36_11_00101/meshes/cube.dae</uri>
+            <scale>0.12 0.12 0.005</scale>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

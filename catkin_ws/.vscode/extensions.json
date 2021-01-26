@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "redhat.vscode-xml",
+        "ms-vscode.cpptools",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-iot.vscode-ros",
+        "redhat.vscode-yaml"
+    ]
+}

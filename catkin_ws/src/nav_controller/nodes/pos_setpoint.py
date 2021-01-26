@@ -14,16 +14,16 @@ class PosSetpointNode():
                                             queue_size=1)
 
     def run(self):
-        mode = 'step'
+        mode = 'const'
 
         if mode == 'const':
             rate = rospy.Rate(50.0)
             while not rospy.is_shutdown():
                 msg1 = Pose()
                 # fill msg with example setpoint
-                msg1.position.x = 2.0
-                msg1.position.y = 1.0
-                msg1.position.z = -1.0
+                msg1.position.x = 1.0
+                msg1.position.y = 3.0
+                msg1.position.z = -0.5
                 self.setpoint_pub.publish(msg1)
 
                 rate.sleep()

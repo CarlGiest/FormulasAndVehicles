@@ -459,13 +459,6 @@
         </link>
 
         <joint name="hook_joint" type="fixed">
-            <axis>
-                <xyz>0 0 1</xyz>
-                <limit>
-                    <lower>0</lower>
-                    <upper>0</upper>
-                </limit>
-            </axis>
             <parent>base_link</parent>
             <child>hook</child>
         </joint>

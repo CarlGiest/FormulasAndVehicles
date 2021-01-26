@@ -19,10 +19,12 @@ from numpy.linalg import norm
 # tag2 = np.array([1.1, 3.35, -0.5])
 # tag3 = np.array([0.5, 3.35, -0.9])
 # tag4 = np.array([1.1, 3.35, -0.9])
-tag1 = np.array([0.7, 3.35, -0.28])
-tag2 = np.array([1.3, 3.35, -0.28])
-tag3 = np.array([0.7, 3.35, -0.28])
-tag4 = np.array([1.3, 3.35, -0.28])
+ring = np.array([1.0, 3.0, -0.5])
+tag_dist = 0.12
+tag1 = np.array([ring[0]+tag_dist, ring[1], ring[2]+tag_dist])
+tag2 = np.array([ring[0]-tag_dist, ring[1], ring[2]+tag_dist])
+tag3 = np.array([ring[0]-tag_dist, ring[1], ring[2]-tag_dist])
+tag4 = np.array([ring[0]-tag_dist, ring[1], ring[2]-tag_dist])
 p = [tag1, tag2, tag3, tag4]
 tank_bound_lower = np.array([0.0, 0.0, -1.0])
 tank_bound_upper = np.array([1.6, 3.35, 0.0])

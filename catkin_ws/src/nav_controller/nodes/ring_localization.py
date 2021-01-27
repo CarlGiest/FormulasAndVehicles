@@ -22,8 +22,8 @@ tag2 = node_at_angle(3.0*np.pi/4.0)
 tag3 = node_at_angle(-np.pi/4.0)
 tag4 = node_at_angle(-3.0*np.pi/4.0)
 p = np.array([tag1, tag2, tag3, tag4])
-tank_bound_lower = np.array([0.0, 0.0, -1.0])
-tank_bound_upper = np.array([1.6, 3.35, 0.0])
+tank_bound_lower = np.array([-1.6, 0.0, -1.0])
+tank_bound_upper = np.array([1.6, 3.35, 1.0])
 
 class localizationNode():
     def __init__(self):

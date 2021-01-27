@@ -53,4 +53,4 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 
-*.catkin_tools*
+.catkin_tools/

@@ -20,9 +20,9 @@
     
     <node name="depth_calculator" pkg="depth_controller" type="pressureToDepth.py" output="screen"/>
 
-    <node name="trans_control" pkg="nav_controller" type="trans_control.py" output="screen"/>
+    <node name="trans_control_ring" pkg="nav_controller" type="trans_control_ring.py" output="screen"/>
     <node name="rot_control" pkg="nav_controller" type="rot_control.py" output="screen"/>
 
-    <node name="localizationNode" pkg="nav_controller" type="localization_node.py" output="screen" />
+    <node name="localizationNode" pkg="nav_controller" type="ring_localization.py" output="screen" />
 
 </launch>

@@ -68,11 +68,15 @@ class NavigationNode():
         _tol = 0.1
         # first move to correct x and z position,
         # then move towards
+        # finally, move up
         if abs(self.xr[0]) > _tol or abs(self.xr[2]) > _tol:
             self.setpoint[0] = self.x[0] - self.xr[0]
             self.setpoint[2] = self.x[2] - self.xr[2]
-        else:
+        elif abs(self.xr[1]) > _tol:
             self.setpoint = self.x - self.xr
+        else:
+            self.setpoint = self.x
+            self.setpoint[2] = -0.1
         msg = Pose()
         msg.position.x = self.setpoint[0]
         msg.position.y = self.setpoint[1]

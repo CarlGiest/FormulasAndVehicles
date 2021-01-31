@@ -34,9 +34,8 @@ class RangesPlugin : public ModelPlugin {
       int id, ignition::math::Vector3d sensor_to_tag);
   bool IsDetected(ignition::math::Vector3d sensor_to_tag,
                   ignition::math::Vector3d body_x_axis);
-  bool IsDetected(ignition::math::Vector3d sensor_to_tag,
-                  ignition::math::Vector3d body_x_axis,
-                  ignition::math::Vector3d body_y_axis);
+  bool IsDetected_bottom(ignition::math::Vector3d sensor_to_tag,
+                  ignition::math::Vector3d body_z_axis);
   double GetDistanceDropProp(double dist);
 
  private:
@@ -70,6 +69,7 @@ class RangesPlugin : public ModelPlugin {
   ignition::math::Vector3d pos_tag_4_;
 
   ignition::math::Vector3d tag_axis_;
+  ignition::math::Vector3d tag_axis_bottom_;
 
   bool initialized_;
 

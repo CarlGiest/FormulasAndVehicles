@@ -96,6 +96,7 @@ void RangesPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
 
   initialized_ = false;
   tag_axis_ = ignition::math::Vector3d(0.0, 1.0, 0.0);
+  tag_axis_bottom_ = ignition::math::Vector3d(0.0, 0.0, -1.0);
 }
 
 void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
@@ -161,11 +162,11 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
                                                ->WorldPose()
                                                .Rot()
                                                .RotateVector(x_unit_vector);
-    ignition::math::Vector3d y_unit_vector(0.0, 1.0, 0.0);
-    ignition::math::Vector3d body_y_axis = model_->GetLink("range_sensor_link")
+    ignition::math::Vector3d z_unit_vector(0.0, 0.0, -1.0);
+    ignition::math::Vector3d body_z_axis = model_->GetLink("range_sensor_link")
                                                ->WorldPose()
                                                .Rot()
-                                               .RotateVector(y_unit_vector);
+                                               .RotateVector(z_unit_vector);
     // ignition::math::Vector3d pos_ring =
     //               model_->GetLink("ring::base_link")->WorldPose().Pos();
     auto model_ring = world_->ModelByName("ring");
@@ -210,7 +211,7 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
     }
     for(int i=0; i<63; ++i){
       ignition::math::Vector3d tmp_to_tag = floor_tags_.at(i) - pos_sensor;
-      if (IsDetected(tmp_to_tag, body_x_axis, body_y_axis)) {
+      if (IsDetected_bottom(tmp_to_tag, body_z_axis)) {
         range_sensor::RangeMeasurement msg = GetRangeMsg(i+5, tmp_to_tag);
         msg_array.measurements.push_back(msg);
       }
@@ -233,7 +234,6 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_visible =
       (fov_angle < max_fov_angle_) && (viewing_angle < max_viewing_angle_);
-
   // measurement might be dropped for whatever reason
   double p = uniform_real_distribution_(random_generator_);
   // additional drop probability that increases with distance to tag
@@ -242,25 +242,20 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
   
-  // return is_visible && is_not_dropped;
-  return true;
+  return is_visible && is_not_dropped;
+  //return true;
 }
 
-bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
-                              ignition::math::Vector3d body_x_axis,
-                              ignition::math::Vector3d body_y_axis ) {
+bool RangesPlugin::IsDetected_bottom(ignition::math::Vector3d sensor_to_tag,
+                              ignition::math::Vector3d body_z_axis ) {
   // determine fov angle for both x and y
-  double fov_angle_x = acos(sensor_to_tag.Dot(body_x_axis) /
-                            (sensor_to_tag.Length() * body_x_axis.Length()));
-  double fov_angle_y = acos(sensor_to_tag.Dot(body_y_axis) /
-                            (sensor_to_tag.Length() * body_y_axis.Length()));                         
-  double viewing_angle_x = acos(tag_axis_.Dot(body_x_axis) /
-                                (tag_axis_.Length() * body_x_axis.Length()));
-  double viewing_angle_y = acos(tag_axis_.Dot(body_y_axis) /
-                                (tag_axis_.Length() * body_y_axis.Length()));
+  double fov_angle = acos(sensor_to_tag.Dot(body_z_axis) /
+                            (sensor_to_tag.Length() * body_z_axis.Length()));                         
+  double viewing_angle = acos(tag_axis_bottom_.Dot(body_z_axis) /
+                                (tag_axis_bottom_.Length() * body_z_axis.Length()));
   bool is_visible =
-        (fov_angle_x < max_fov_angle_) && (viewing_angle_x < max_viewing_angle_) &&
-        (fov_angle_y < max_fov_angle_) && (viewing_angle_y < max_viewing_angle_);
+        (fov_angle < max_fov_angle_) && (viewing_angle < max_viewing_angle_);
+  gzmsg << "[ranges_plugin] (fov, view) " << fov_angle << ", " << viewing_angle << "\n";
   // measurement might be dropped for whatever reason
   double p = uniform_real_distribution_(random_generator_);
   // additional drop probability that increases with distance to tag
@@ -269,8 +264,8 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
 
-  // return is_visible && is_not_dropped;
-  return true;
+  return is_visible && is_not_dropped;
+  // return true;
 }
 
 range_sensor::RangeMeasurement RangesPlugin::GetRangeMsg(

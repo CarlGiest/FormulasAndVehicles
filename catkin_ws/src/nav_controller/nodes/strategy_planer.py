@@ -1,14 +1,23 @@
 #!/usr/bin/env python
 import rospy
+import numpy as np
+import threading
 from std_msgs.msg import Int16, String
 from mavros_msgs.srv import CommandBool
+from geometry_msgs.msg import Pose
 
 
 class strategyNode():
     def __init__(self):
         rospy.init_node("strategy_planer")
+        self.data_lock = threading.RLock()
         self.tagNumber = 0
         self.tag_threshold = 3
+        self.pos_threshold = 0.1
+        self.actual_pos = np.array([10.0, 10.0, 10.0])
+        self.strategy_frequency = 20.0
+
+        rospy.Timer(rospy.Duration(1.0/self.strategy_frequency), self.update_strategy)
 
         self.strategy_pub = rospy.Publisher("strategy",
                                             String,
@@ -22,22 +31,33 @@ class strategyNode():
         if self.doArm:
             self.arm_vehicle()
 
+        self.setpoint_sub = rospy.Subscriber("ring_pos",
+                                             Pose,
+                                             self.pos_callback,
+                                             queue_size=1)
+
     def tag_callback(self, msg):
-        if self.tagNumber == msg.data:
-            self.update_strategy()
-            return
-        else:
+        with self.data_lock:
             self.tagNumber = msg.data
-            self.update_strategy()
+
+    def pos_callback(self, msg):
+        with self.data_lock:
+            self.actual_pos[0] = msg.position.x
+            self.actual_pos[1] = msg.position.y
+            self.actual_pos[2] = msg.position.z
 
     def update_strategy(self):
         msg = String()
         if self.tagNumber < self.tag_threshold:
             msg.data = "search"
-        elif self.tagNumber > self.tag_threshold:
-            msg.data = "follow"
+        elif self.tagNumber > self.tag_threshold and \
+            (abs(self.actual_pos[0]) > self.pos_threshold or abs(self.actual_pos[2]) > self.pos_threshold):
+            msg.data = "approach"
+        elif self.tagNumber > self.tag_threshold and \
+            abs(self.actual_pos[1]) > self.pos_threshold:
+            msg.data = "stich"
         else:
-            return
+            msg.data = "rescue"
         self.strategy_pub.publish(msg)
 
     def arm_vehicle(self):

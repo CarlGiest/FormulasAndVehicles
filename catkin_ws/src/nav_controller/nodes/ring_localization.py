@@ -76,9 +76,9 @@ class localizationNode():
         def objective_function(x):
             return np.array([norm(p[i]-x)-dists[i]
                             for i in range(4) if dists[i] != 0])
-        # return least_squares(objective_function, x0, ftol=1e-7,
-        #                      bounds=(tank_bound_lower, tank_bound_upper)).x
-        return least_squares(objective_function, x0, ftol=1e-7).x
+        return least_squares(objective_function, x0, ftol=1e-7,
+                             bounds=(tank_bound_lower, tank_bound_upper)).x
+        # return least_squares(objective_function, x0, ftol=1e-7).x
 
 def main():
     node = localizationNode()

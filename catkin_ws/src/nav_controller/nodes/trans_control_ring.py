@@ -23,9 +23,9 @@ class transControlNode():
         self.xy_i_gain = 0.08
         self.xy_d_gain = 0.05
         # Dynamic Parameter
-        self.vertical_p_gain = 0.00001735
-        self.vertical_i_gain = 0.0000045
-        self.vertical_d_gain = 0.000005
+        self.vertical_p_gain = 0.1735
+        self.vertical_i_gain = 0.045
+        self.vertical_d_gain = 0.05
 
         self.setpoint_buf_len = 5
         self.i_buf_len = 20
@@ -140,9 +140,21 @@ class transControlNode():
 
     def pos_callback(self, msg):
         with self.data_lock:
-            self.pos.position.x = -msg.position.x
-            self.pos.position.y = -msg.position.y
-            self.pos.position.z = -msg.position.z
+            if self.strategy == "approach":
+                self.pos.position.x = msg.position.x
+                self.pos.position.y = msg.position.y-0.3
+                self.pos.position.z = msg.position.z
+                
+            elif self.strategy == "stich":
+                self.pos.position.x = msg.position.x
+                self.pos.position.y = msg.position.y
+                self.pos.position.z = msg.position.z
+
+            elif self.strategy == "rescue":
+                self.pos.position.x = msg.position.x
+                self.pos.position.y = msg.position.y
+                self.pos.position.z = 0.0
+
             self.sensor_time = rospy.get_time()
             #self.trans_control()
 
@@ -198,7 +210,7 @@ class transControlNode():
 
         # rospy.loginfo("following")
         self.setGains(True)
-        rospy.loginfo(self.pos.position)
+        # rospy.loginfo(self.pos.position)
         self.lateral_thrust = -self.getThrust(self.pos.position.x,
                                       self.i_buf.position.x, False)
         self.setGains(True)

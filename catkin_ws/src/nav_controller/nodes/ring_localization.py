@@ -40,8 +40,9 @@ class localizationNode():
     def rangeCallback(self, msg):
         dists = np.zeros(4)
         for measure in msg.measurements:
-            id = measure.id
-            dists[id-1] = meassure.range
+            if measure.id < 5:
+                id = measure.id
+                dists[id-1] = measure.range
         tagNumerMsg = Int16()
         tagNumerMsg.data = len([1 for dist in dists if dist != 0])
         self.tag_num_pub.publish(tagNumerMsg)

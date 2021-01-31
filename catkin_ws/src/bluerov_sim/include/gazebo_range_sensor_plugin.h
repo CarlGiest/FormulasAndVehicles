@@ -9,6 +9,8 @@
 #include <ignition/math.hh>
 #include <sdf/sdf.hh>
 
+#include <vector>
+
 namespace gazebo {
 static constexpr auto kDefaultPubRate = 7.0;
 static constexpr auto kDefaultRangesTopic = "tag_detections_sim";
@@ -32,6 +34,9 @@ class RangesPlugin : public ModelPlugin {
       int id, ignition::math::Vector3d sensor_to_tag);
   bool IsDetected(ignition::math::Vector3d sensor_to_tag,
                   ignition::math::Vector3d body_x_axis);
+  bool IsDetected(ignition::math::Vector3d sensor_to_tag,
+                  ignition::math::Vector3d body_x_axis,
+                  ignition::math::Vector3d body_y_axis);
   double GetDistanceDropProp(double dist);
 
  private:
@@ -67,5 +72,7 @@ class RangesPlugin : public ModelPlugin {
   ignition::math::Vector3d tag_axis_;
 
   bool initialized_;
+
+  std::vector<ignition::math::Vector3d> floor_tags_;
 };
 }  // namespace gazebo

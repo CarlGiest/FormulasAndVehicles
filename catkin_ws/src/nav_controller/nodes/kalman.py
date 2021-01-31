@@ -4,7 +4,7 @@ import threading
 from std_msgs.msg import Float64, Int16
 from geometry_msgs.msg import Vector3, Pose
 from apriltag_ros.msg import AprilTagDetectionArray
-from range_sensor.msg import RangeMeasurementArray
+from range_sensor.msg import RangeMeasurementArray, RangeMeasurement
 from nav_msgs.msg import Odometry
 import tf.transformations as trans
 # from scipy.optimize import minimize, least_squares
@@ -49,6 +49,7 @@ class localizationNode():
         self.tag_num_pub = rospy.Publisher("number_tags", Int16, queue_size=1)
         self.z_gt = 0.0
         self.pos_pub = rospy.Publisher("robot_pos", Pose, queue_size=1)
+        self.range_est_pub = rospy.Publisher("range_estimates", RangeMeasurementArray, queue_size=1)
         self.x0 = np.zeros(3)
         self.Sigma0 = np.diag([0.01, 0.01, 0.01])
         self.avg_buf = []
@@ -88,6 +89,17 @@ class localizationNode():
         poseMsg.position.x = x0[0]
         poseMsg.position.y = x0[1]
         poseMsg.position.z = x0[2]
+
+
+        range_est_array_msg = RangeMeasurementArray()
+        for i in range(len(p)-1):
+            range_est_msg = RangeMeasurement()
+            range_est_msg.id = i+1
+            range_est_msg.range = np.sqrt(x0[0]**2 + x0[1]**2 + x0[2]**2)
+
+            range_est_array_msg.measurements.append(range_est_msg)
+
+        self.range_est_pub.publish(range_est_array_msg)
         self.pos_pub.publish(poseMsg)
 
     def depth_callback(self, msg):

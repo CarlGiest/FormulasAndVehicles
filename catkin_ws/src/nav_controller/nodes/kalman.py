@@ -24,6 +24,7 @@ tag2 = np.array([1.3, 3.35, -0.28])
 tag3 = np.array([0.7, 3.35, -0.28])
 tag4 = np.array([1.3, 3.35, -0.28])
 p = [tag1, tag2, tag3, tag4]
+range_buf = np.zeros(len(p))
 tank_bound_lower = np.array([0.0, 0.0, -1.0])
 tank_bound_upper = np.array([1.6, 3.35, 0.0])
 
@@ -50,6 +51,7 @@ class localizationNode():
         self.z_gt = 0.0
         self.pos_pub = rospy.Publisher("robot_pos", Pose, queue_size=1)
         self.range_est_pub = rospy.Publisher("range_estimates", RangeMeasurementArray, queue_size=1)
+        self.range_meas_pub = rospy.Publisher("range_measurements", RangeMeasurementArray, queue_size=1)
         self.x0 = np.zeros(3)
         self.Sigma0 = np.diag([0.01, 0.01, 0.01])
         self.avg_buf = []
@@ -90,16 +92,33 @@ class localizationNode():
         poseMsg.position.y = x0[1]
         poseMsg.position.z = x0[2]
 
-
+        # Output the estimated range measurement based on the position estimate
         range_est_array_msg = RangeMeasurementArray()
-        for i in range(len(p)-1):
+        for i in range(len(p)):
+            x_diff = x0[0] - p[i][0]
+            y_diff = x0[1] - p[i][1]
+            z_diff = x0[2] - p[i][2]
             range_est_msg = RangeMeasurement()
-            range_est_msg.id = i+1
-            range_est_msg.range = np.sqrt(x0[0]**2 + x0[1]**2 + x0[2]**2)
+            range_est_msg.id = i
+            range_est_msg.range = np.sqrt(x_diff**2 + y_diff**2 + z_diff**2)
 
             range_est_array_msg.measurements.append(range_est_msg)
 
+        # Output the true range measurements. When no new measurement is received, the last value is held.
+        range_meas_array_msg = RangeMeasurementArray()
+        for i in range(len(p)-1):
+            range_meas_msg = RangeMeasurement()
+            range_meas_msg.id = i
+            if(dists[i]):
+                range_meas_msg.range = dists[i]
+                range_buf[i] = dists[i]
+            else:
+                range_meas_msg.range = range_buf[i]
+
+            range_meas_array_msg.measurements.append(range_meas_msg)
+
         self.range_est_pub.publish(range_est_array_msg)
+        self.range_meas_pub.publish(range_meas_array_msg)
         self.pos_pub.publish(poseMsg)
 
     def depth_callback(self, msg):

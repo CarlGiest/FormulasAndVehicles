@@ -34,7 +34,7 @@ class localizationNode():
         self.range_sub = rospy.Subscriber("ranges", RangeMeasurementArray, self.rangeCallback, queue_size=1)
         self.pos_pub = rospy.Publisher("ring_pos", Pose, queue_size=1)
         self.tag_num_pub = rospy.Publisher("number_tags", Int16, queue_size=1)
-        self.x0 = np.zeros(3)
+        self.x0 = np.array([0.0, 1.0, 0.0])
         self.avg_buf = []
         self.avg_dist_buf = [[] for _ in range(4)]
         self.avg_buf_len = 3
@@ -61,10 +61,10 @@ class localizationNode():
             if len(msg.measurements) < 3:
                 return
             self.x0 = self.optimization(dists, self.x0)
-            self.avg_buf.append(self.x0)
-            if len(self.avg_buf) > self.avg_buf_len:
-                self.avg_buf.pop(0)
-            self.x0 = sum(self.avg_buf) / len(self.avg_buf)
+            # self.avg_buf.append(self.x0)
+            # if len(self.avg_buf) > self.avg_buf_len:
+            #     self.avg_buf.pop(0)
+            # self.x0 = sum(self.avg_buf) / len(self.avg_buf)
             
             poseMsg = Pose()
             poseMsg.position.x = self.x0[0]
@@ -76,8 +76,9 @@ class localizationNode():
         def objective_function(x):
             return np.array([norm(p[i]-x)-dists[i]
                             for i in range(4) if dists[i] != 0])
-        return least_squares(objective_function, x0, ftol=1e-7,
-                             bounds=(tank_bound_lower, tank_bound_upper)).x
+        # return least_squares(objective_function, x0, ftol=1e-7,
+        #                      bounds=(tank_bound_lower, tank_bound_upper)).x
+        return least_squares(objective_function, x0, ftol=1e-7).x
 
 def main():
     node = localizationNode()

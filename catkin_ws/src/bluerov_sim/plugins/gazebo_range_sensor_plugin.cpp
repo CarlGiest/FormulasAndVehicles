@@ -103,12 +103,12 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
   common::Time current_time = world_->SimTime();
   double dt = (current_time - last_pub_time_).Double();
 
-  if (!initialized_) {
+  if (true && !initialized_) {
     auto model = world_->ModelByName("ring");
     if (model && model->GetChildLink("tag_1_link")) {
       pos_tag_1_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_1_link")
-                       ->RelativePose()
+                       ->WorldPose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 1 Position found.\n";
       gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_tag_1_
@@ -117,21 +117,21 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
     if (model && model->GetChildLink("tag_2_link")) {
       pos_tag_2_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_2_link")
-                       ->RelativePose()
+                       ->WorldPose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 2 Position found.\n";
     }
     if (model && model->GetChildLink("tag_3_link")) {
       pos_tag_3_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_3_link")
-                       ->RelativePose()
+                       ->WorldPose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 3 Position found.\n";
     }
     if (model && model->GetChildLink("tag_4_link")) {
       pos_tag_4_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_4_link")
-                       ->RelativePose()
+                       ->WorldPose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 4 Position found.\n";
       initialized_ = true;
@@ -178,33 +178,33 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
                        .Pos();
       //gzmsg << "[ranges_plugin] Ring" << pos_ring << "\n";
     }
-    auto pos_tag_1_abs =  pos_ring + pos_tag_1_;
-    auto pos_tag_2_abs =  pos_ring + pos_tag_2_;
-    auto pos_tag_3_abs =  pos_ring + pos_tag_3_;
-    auto pos_tag_4_abs =  pos_ring + pos_tag_4_;
+    // auto pos_tag_1_abs =  pos_ring + pos_tag_1_;
+    // auto pos_tag_2_abs =  pos_ring + pos_tag_2_;
+    // auto pos_tag_3_abs =  pos_ring + pos_tag_3_;
+    // auto pos_tag_4_abs =  pos_ring + pos_tag_4_;
     // tag 1
-    ignition::math::Vector3d sensor_to_tag_1 = pos_tag_1_abs - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_1 = pos_tag_1_ - pos_sensor;
     if (IsDetected(sensor_to_tag_1, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(1, sensor_to_tag_1);
       msg_array.measurements.push_back(msg);
     }
 
     // tag 2
-    ignition::math::Vector3d sensor_to_tag_2 = pos_tag_2_abs - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_2 = pos_tag_2_ - pos_sensor;
     if (IsDetected(sensor_to_tag_2, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(2, sensor_to_tag_2);
       msg_array.measurements.push_back(msg);
     }
 
     // tag 3
-    ignition::math::Vector3d sensor_to_tag_3 = pos_tag_3_abs - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_3 = pos_tag_3_ - pos_sensor;
     if (IsDetected(sensor_to_tag_3, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(3, sensor_to_tag_3);
       msg_array.measurements.push_back(msg);
     }
 
     // tag 4
-    ignition::math::Vector3d sensor_to_tag_4 = pos_tag_4_abs - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_4 = pos_tag_4_ - pos_sensor;
     if (IsDetected(sensor_to_tag_4, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(4, sensor_to_tag_4);
       msg_array.measurements.push_back(msg);

@@ -255,7 +255,7 @@ bool RangesPlugin::IsDetected_bottom(ignition::math::Vector3d sensor_to_tag,
                                 (tag_axis_bottom_.Length() * body_z_axis.Length()));
   bool is_visible =
         (fov_angle < max_fov_angle_) && (viewing_angle < max_viewing_angle_);
-  gzmsg << "[ranges_plugin] (fov, view) " << fov_angle << ", " << viewing_angle << "\n";
+  //gzmsg << "[ranges_plugin] (fov, view) " << fov_angle << ", " << viewing_angle << "\n";
   // measurement might be dropped for whatever reason
   double p = uniform_real_distribution_(random_generator_);
   // additional drop probability that increases with distance to tag

@@ -19,13 +19,13 @@ class transControlNode():
 
         self.vorsteuerung = -0.05
         # Parameter static
-        self.xy_p_gain = 0.21
-        self.xy_i_gain = 0.16
-        self.xy_d_gain = 0.1
+        self.xy_p_gain = 0.105
+        self.xy_i_gain = 0.08
+        self.xy_d_gain = 0.05
         # Dynamic Parameter
-        self.vertical_p_gain = 0.375
-        self.vertical_i_gain = 0.09
-        self.vertical_d_gain = 0.1
+        self.vertical_p_gain = 0.00001735
+        self.vertical_i_gain = 0.0000045
+        self.vertical_d_gain = 0.000005
 
         self.setpoint_buf_len = 5
         self.i_buf_len = 20
@@ -199,10 +199,10 @@ class transControlNode():
         # rospy.loginfo("following")
         self.setGains(True)
         rospy.loginfo(self.pos.position)
-        self.thrust = -self.getThrust(self.pos.position.x,
+        self.lateral_thrust = -self.getThrust(self.pos.position.x,
                                       self.i_buf.position.x, False)
         self.setGains(True)
-        self.lateral_thrust = self.getThrust(self.pos.position.y,
+        self.thrust = self.getThrust(self.pos.position.y,
                                      self.i_buf.position.y, False)
         self.setGains(False)
         self.vertical_thrust = self.getThrust(self.pos.position.z,

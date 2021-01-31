@@ -34,10 +34,9 @@
         <transparency>0</transparency>
         <cast_shadows>1</cast_shadows>
       </visual>
-      <collision name='collision'>
-        <laser_retro>0</laser_retro>
+      <collision name='collision_ring'>
         <max_contacts>10</max_contacts>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
             <uri>/home/carl/Uni/fav/catkin_ws/src/bluerov_sim/models/ring/meshes/ring.dae</uri>
@@ -45,24 +44,6 @@
           </mesh>
         </geometry>
         <surface>
-          <friction>
-            <ode>
-              <mu>1</mu>
-              <mu2>1</mu2>
-              <fdir1>0 0 0</fdir1>
-              <slip1>0</slip1>
-              <slip2>0</slip2>
-            </ode>
-            <torsional>
-              <coefficient>1</coefficient>
-              <patch_radius>0</patch_radius>
-              <surface_radius>0</surface_radius>
-              <use_patch_radius>1</use_patch_radius>
-              <ode>
-                <slip>0</slip>
-              </ode>
-            </torsional>
-          </friction>
           <bounce>
             <restitution_coefficient>0</restitution_coefficient>
             <threshold>1e+06</threshold>
@@ -221,6 +202,5 @@
 </joint>
 
     <static>0</static>
-    <allow_auto_disable>1</allow_auto_disable>
   </model>
 </sdf>

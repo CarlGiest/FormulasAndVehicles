@@ -138,8 +138,9 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
     // Generate Grid for floor AprilTags
     for(double j=0.0; j<9.0 ; ++j){
       for(double i=0.0; i<7.0; ++i){
-        auto tmp_tag = ignition::math::Vector3d(1.56-i*0.25, 0.6+j*0.39375, 0.0);
+        auto tmp_tag = ignition::math::Vector3d(1.56-i*0.25, 0.06+j*0.39375, -1.3);
         floor_tags_.push_back(tmp_tag);
+        //gzmsg << "[ranges plugin] Tag " << i+j*7.0 << " pos at " << tmp_tag << "\n";
       }
     }
   }
@@ -153,8 +154,7 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
     // get world pose
     ignition::math::Vector3d pos_sensor =
         model_->GetLink("range_sensor_link")->WorldPose().Pos();
-            gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_sensor
-           << " \n";
+    // gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_sensor << " \n";
     // get orientation of body x-axis
     ignition::math::Vector3d x_unit_vector(1.0, 0.0, 0.0);
     ignition::math::Vector3d body_x_axis = model_->GetLink("range_sensor_link")
@@ -166,14 +166,21 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
                                                ->WorldPose()
                                                .Rot()
                                                .RotateVector(y_unit_vector);
-    
-    ignition::math::Vector3d pos_ring =
-                  model_->GetLink("ring::base_link")->WorldPose().Pos();
+    // ignition::math::Vector3d pos_ring =
+    //               model_->GetLink("ring::base_link")->WorldPose().Pos();
+    auto model_ring = world_->ModelByName("ring");
+    ignition::math::Vector3d pos_ring;
+    if(model_ring && model_ring->GetChildLink("base_link")){
+      pos_ring = world_->ModelByName("ring")
+                       ->GetChildLink("base_link")
+                       ->WorldPose()
+                       .Pos();
+      //gzmsg << "[ranges_plugin] Ring" << pos_ring << "\n";
+    }
     auto pos_tag_1_abs =  pos_ring + pos_tag_1_;
     auto pos_tag_2_abs =  pos_ring + pos_tag_2_;
     auto pos_tag_3_abs =  pos_ring + pos_tag_3_;
     auto pos_tag_4_abs =  pos_ring + pos_tag_4_;
-
     // tag 1
     ignition::math::Vector3d sensor_to_tag_1 = pos_tag_1_abs - pos_sensor;
     if (IsDetected(sensor_to_tag_1, body_x_axis)) {
@@ -201,7 +208,7 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(4, sensor_to_tag_4);
       msg_array.measurements.push_back(msg);
     }
-    for(int i=0; i<64; ++i){
+    for(int i=0; i<63; ++i){
       ignition::math::Vector3d tmp_to_tag = floor_tags_.at(i) - pos_sensor;
       if (IsDetected(tmp_to_tag, body_x_axis, body_y_axis)) {
         range_sensor::RangeMeasurement msg = GetRangeMsg(i+5, tmp_to_tag);
@@ -235,7 +242,8 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
   
-  return is_visible && is_not_dropped;
+  // return is_visible && is_not_dropped;
+  return true;
 }
 
 bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
@@ -261,7 +269,8 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
 
-  return is_visible && is_not_dropped;
+  // return is_visible && is_not_dropped;
+  return true;
 }
 
 range_sensor::RangeMeasurement RangesPlugin::GetRangeMsg(

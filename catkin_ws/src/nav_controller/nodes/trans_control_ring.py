@@ -140,9 +140,9 @@ class transControlNode():
 
     def pos_callback(self, msg):
         with self.data_lock:
-            self.pos.position.x = msg.position.x
-            self.pos.position.y = msg.position.y
-            self.pos.position.z = msg.position.z
+            self.pos.position.x = -msg.position.x
+            self.pos.position.y = -msg.position.y
+            self.pos.position.z = -msg.position.z
             self.sensor_time = rospy.get_time()
             #self.trans_control()
 
@@ -198,11 +198,11 @@ class transControlNode():
 
         # rospy.loginfo("following")
         self.setGains(True)
-        # rospy.loginfo(self.pos_setpoint.position)
-        self.lateral_thrust = -self.getThrust(self.pos.position.x,
-                                              self.i_buf.position.x, False)
+        rospy.loginfo(self.pos.position)
+        self.thrust = -self.getThrust(self.pos.position.x,
+                                      self.i_buf.position.x, False)
         self.setGains(True)
-        self.thrust = self.getThrust(self.pos.position.y,
+        self.lateral_thrust = self.getThrust(self.pos.position.y,
                                      self.i_buf.position.y, False)
         self.setGains(False)
         self.vertical_thrust = self.getThrust(self.pos.position.z,

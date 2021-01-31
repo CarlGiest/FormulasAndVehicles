@@ -3,7 +3,7 @@
 
 
     <include file="$(find bluerov_sim)/launch/final_project_world.launch">
-        <arg name="gui" value="false"/>
+        <arg name="gui" value="true"/>
         <arg name="camera" value="false" />
         <arg name="paused" value="false" />
     </include>
@@ -22,8 +22,8 @@
     
     <node name="depth_calculator" pkg="depth_controller" type="pressureToDepth.py" output="screen"/>
 
-    <!-- <node name="trans_control_ring" pkg="nav_controller" type="trans_control_ring.py" output="screen"/> -->
-    <!-- <node name="rot_control" pkg="nav_controller" type="rot_control.py" output="screen"/> -->
+    <node name="trans_control_ring" pkg="nav_controller" type="trans_control_ring.py" output="screen"/>
+    <node name="rot_control" pkg="nav_controller" type="rot_control.py" output="screen"/>
 
     <node name="localizationNode" pkg="nav_controller" type="ring_localization.py" output="screen" />
 

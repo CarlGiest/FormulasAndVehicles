@@ -22,12 +22,15 @@ tag2 = node_at_angle(3.0*np.pi/4.0)
 tag3 = node_at_angle(-np.pi/4.0)
 tag4 = node_at_angle(-3.0*np.pi/4.0)
 p = np.array([tag1, tag2, tag3, tag4])
-tank_bound_lower = np.array([-1.6, 0.0, -1.0])
-tank_bound_upper = np.array([1.6, 3.35, 1.0])
+# tank_bound_lower = np.array([-1.6, 0.0, -1.0])
+# tank_bound_upper = np.array([1.6, 3.35, 1.0])
+tank_bound_lower = np.array([-4.0, 0.0, -1.0])
+tank_bound_upper = np.array([4.0, 4.0, 1.0])
 
 class localizationNode():
     def __init__(self):
-        rospy.init_node("localizationNode")
+        rospy.init_node("ringLocalizationNode")
+        self.data_lock = threading.RLock()
         self.range_sub = rospy.Subscriber("ranges", RangeMeasurementArray, self.rangeCallback, queue_size=1)
         self.pos_pub = rospy.Publisher("ring_pos", Pose, queue_size=1)
         self.tag_num_pub = rospy.Publisher("number_tags", Int16, queue_size=1)
@@ -38,35 +41,36 @@ class localizationNode():
         self.avg_buf_len_dist = 5
 
     def rangeCallback(self, msg):
-        dists = np.zeros(4)
-        for measure in msg.measurements:
-            if measure.id < 5:
-                id = measure.id
-                dists[id-1] = measure.range
-        tagNumerMsg = Int16()
-        tagNumerMsg.data = len([1 for dist in dists if dist != 0])
-        self.tag_num_pub.publish(tagNumerMsg)
-        for i in range(4):
-            if dists[i] != 0:
-                self.avg_dist_buf[i].append(dists[i])
-            if len(self.avg_dist_buf[i]) > self.avg_buf_len_dist:
-                self.avg_dist_buf[i].pop(0)
-            if len(self.avg_dist_buf[i]) > 0:
-                dists[i] = sum(self.avg_dist_buf[i]) / \
-                           len(self.avg_dist_buf[i])
-        if len(msg.measurements) < 3:
-            return
-        self.x0 = self.optimization(dists, self.x0)
-        self.avg_buf.append(self.x0)
-        if len(self.avg_buf) > self.avg_buf_len:
-            self.avg_buf.pop(0)
-        self.x0 = sum(self.avg_buf) / len(self.avg_buf)
-        
-        poseMsg = Pose()
-        poseMsg.position.x = self.x0[0]
-        poseMsg.position.y = self.x0[1]
-        poseMsg.position.z = self.x0[2]
-        self.pos_pub.publish(poseMsg)
+        with self.data_lock:
+            dists = np.zeros(4)
+            for measure in msg.measurements:
+                if measure.id < 5:
+                    id = measure.id
+                    dists[id-1] = measure.range
+            tagNumerMsg = Int16()
+            tagNumerMsg.data = len([1 for dist in dists if dist != 0])
+            self.tag_num_pub.publish(tagNumerMsg)
+            for i in range(4):
+                if dists[i] != 0:
+                    self.avg_dist_buf[i].append(dists[i])
+                if len(self.avg_dist_buf[i]) > self.avg_buf_len_dist:
+                    self.avg_dist_buf[i].pop(0)
+                if len(self.avg_dist_buf[i]) > 0:
+                    dists[i] = sum(self.avg_dist_buf[i]) / \
+                            len(self.avg_dist_buf[i])
+            if len(msg.measurements) < 3:
+                return
+            self.x0 = self.optimization(dists, self.x0)
+            self.avg_buf.append(self.x0)
+            if len(self.avg_buf) > self.avg_buf_len:
+                self.avg_buf.pop(0)
+            self.x0 = sum(self.avg_buf) / len(self.avg_buf)
+            
+            poseMsg = Pose()
+            poseMsg.position.x = self.x0[0]
+            poseMsg.position.y = self.x0[1]
+            poseMsg.position.z = self.x0[2]
+            self.pos_pub.publish(poseMsg)
 
     def optimization(self, dists, x0):
         def objective_function(x):

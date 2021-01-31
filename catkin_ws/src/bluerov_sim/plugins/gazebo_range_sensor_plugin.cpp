@@ -103,31 +103,33 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
   double dt = (current_time - last_pub_time_).Double();
 
   if (!initialized_) {
-    auto model = world_->ModelByName("apriltag_tank");
-    if (model && model->GetChildLink("tag_1::base_link")) {
-      pos_tag_1_ = world_->ModelByName("apriltag_tank")
-                       ->GetChildLink("tag_1::base_link")
+    auto model = world_->ModelByName("ring");
+    if (model && model->GetChildLink("tag_1_link")) {
+      pos_tag_1_ = world_->ModelByName("ring")
+                       ->GetChildLink("tag_1_link")
                        ->RelativePose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 1 Position found.\n";
+      gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_tag_1_
+           << " \n";
     }
-    if (model && model->GetChildLink("tag_2::base_link")) {
-      pos_tag_2_ = world_->ModelByName("apriltag_tank")
-                       ->GetChildLink("tag_2::base_link")
+    if (model && model->GetChildLink("tag_2_link")) {
+      pos_tag_2_ = world_->ModelByName("ring")
+                       ->GetChildLink("tag_2_link")
                        ->RelativePose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 2 Position found.\n";
     }
-    if (model && model->GetChildLink("tag_3::base_link")) {
-      pos_tag_3_ = world_->ModelByName("apriltag_tank")
-                       ->GetChildLink("tag_3::base_link")
+    if (model && model->GetChildLink("tag_3_link")) {
+      pos_tag_3_ = world_->ModelByName("ring")
+                       ->GetChildLink("tag_3_link")
                        ->RelativePose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 3 Position found.\n";
     }
-    if (model && model->GetChildLink("tag_4::base_link")) {
-      pos_tag_4_ = world_->ModelByName("apriltag_tank")
-                       ->GetChildLink("tag_4::base_link")
+    if (model && model->GetChildLink("tag_4_link")) {
+      pos_tag_4_ = world_->ModelByName("ring")
+                       ->GetChildLink("tag_4_link")
                        ->RelativePose()
                        .Pos();
       gzmsg << "[ranges plugin] Tag 4 Position found.\n";
@@ -144,12 +146,21 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
     // get world pose
     ignition::math::Vector3d pos_sensor =
         model_->GetLink("range_sensor_link")->WorldPose().Pos();
+            gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_sensor
+           << " \n";
     // get orientation of body x-axis
     ignition::math::Vector3d x_unit_vector(1.0, 0.0, 0.0);
     ignition::math::Vector3d body_x_axis = model_->GetLink("range_sensor_link")
                                                ->WorldPose()
                                                .Rot()
                                                .RotateVector(x_unit_vector);
+    
+    ignition::math::Vector3d pos_ring =
+                  model_->GetLink("ring::base_link")->WorldPose().Pos();
+    auto pos_tag_1_abs =  pos_ring + pos_tag_1_;
+    auto pos_tag_2_abs =  pos_ring + pos_tag_2_;
+    auto pos_tag_3_abs =  pos_ring + pos_tag_3_;
+    auto pos_tag_4_abs =  pos_ring + pos_tag_4_;
 
     // tag 1
     ignition::math::Vector3d sensor_to_tag_1 = pos_tag_1_ - pos_sensor;
@@ -205,7 +216,7 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
   
-  return is_visible && is_not_dropped;
+  return true;
 }
 
 range_sensor::RangeMeasurement RangesPlugin::GetRangeMsg(

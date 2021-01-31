@@ -45,16 +45,16 @@
             </inertial>
         </link>
 
-        <joint name="pressure_sensor_joint" type="revolute">
+        <joint name="pressure_sensor_joint" type="fixed">
             <child>pressure_sensor_link</child>
             <parent>base_link</parent>
-            <axis>
+            <!-- <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
                     <upper>0</upper>
                     <lower>0</lower>
                 </limit>
-            </axis>
+            </axis>revolute -->
         </joint>
 
         <link name="range_sensor_link">
@@ -72,16 +72,16 @@
             </inertial>
         </link>
 
-        <joint name="range_sensor_joint" type="revolute">
+        <joint name="range_sensor_joint" type="fixed">
             <child>range_sensor_link</child>
             <parent>base_link</parent>
-            <axis>
+            <!-- <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
                     <upper>0</upper>
                     <lower>0</lower>
                 </limit>
-            </axis>
+            </axis> -->
         </joint>
 
         <plugin name="pressure_plugin" filename="libgazebo_pressure_plugin.so">
@@ -93,12 +93,12 @@
         <plugin name="range_sensor_plugin" filename="libgazebo_range_sensor_plugin.so">
             <robotNamespace />
             <pubRate>7.0</pubRate>
-            <rangeNoiseStd>0.1</rangeNoiseStd>
-            <fovCamera>100</fovCamera>
-            <viewingAngle>140</viewingAngle>
-            <dropProb>0.05</dropProb>
-            <maxDetectionDist>4.0</maxDetectionDist>
-            <distDropProbExponent>2.0</distDropProbExponent>
+            <rangeNoiseStd>0.0</rangeNoiseStd>
+            <fovCamera>180</fovCamera>
+            <viewingAngle>180</viewingAngle>
+            <dropProb>0.0</dropProb>
+            <maxDetectionDist>40.0</maxDetectionDist>
+            <distDropProbExponent>0.0</distDropProbExponent>
         </plugin>
 
         <link name="thruster1">

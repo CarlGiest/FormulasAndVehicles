@@ -1,11 +1,11 @@
 <launch>
     <!-- Vehicle spawn position -->
-    <arg name="x_Vehicle" default="0.7" />
-    <arg name="y_Vehicle" default="2.0" />
+    <arg name="x_Vehicle" default="1.0" />
+    <arg name="y_Vehicle" default="1.8" />
     <arg name="z_Vehicle" default="-0.7" />
     <arg name="P_Vehicle" default="0.0" />
     <arg name="R_Vehicle" default="0.0" />
-    <arg name="Y_Vehicle" default="0.0" />
+    <arg name="Y_Vehicle" default="1.5677" />
     <arg name="camera" default="false" />
 
     <!-- Ring spawn position and sim settings-->

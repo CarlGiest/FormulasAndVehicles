@@ -174,7 +174,7 @@ class transControlNode():
         
     def trans_control(self, *args):
         if rospy.get_time() - self.sensor_time > 5:
-            rospy.logwarn("Sensor Timeout")
+            # rospy.logwarn("Sensor Timeout")
             self.thrust = 0.0
             self.lateral_thrust = 0.0
             self.vertical_thrust = self.vorsteuerung

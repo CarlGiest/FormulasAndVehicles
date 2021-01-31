@@ -12,12 +12,12 @@ import numpy as np
 from numpy.linalg import norm
 
 p = []
-tank_bound_lower = np.array([0.0, 0.0, -1.0])
-tank_bound_upper = np.array([1.6, 3.35, 0.0])
+tank_bound_lower = np.array([0.0, 0.0, -1.3])
+tank_bound_upper = np.array([2.0, 4.0, 0.0])
 
 for j in range(9):
     for i in range(7):
-        p.append(np.array([1.56+i*0.25, 0.06+j*0.39375, -1.3]))
+        p.append(np.array([1.56-i*0.25, 0.06+j*0.39375, -1.3]))
 
 p = np.array(p)
 

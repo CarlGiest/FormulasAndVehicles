@@ -40,8 +40,9 @@ class localizationNode():
     def rangeCallback(self, msg):
         dists = np.zeros(4)
         for measure in msg.measurements:
-            id = measure.id
-            dists[id-1] = meassure.range
+            if measure.id < 5:
+                id = measure.id
+                dists[id-1] = measure.range
         tagNumerMsg = Int16()
         tagNumerMsg.data = len([1 for dist in dists if dist != 0])
         self.tag_num_pub.publish(tagNumerMsg)
@@ -55,23 +56,23 @@ class localizationNode():
                            len(self.avg_dist_buf[i])
         if len(msg.measurements) < 3:
             return
-        self.x0 = optimization(dists, self.x0)
+        self.x0 = self.optimization(dists, self.x0)
         self.avg_buf.append(self.x0)
         if len(self.avg_buf) > self.avg_buf_len:
             self.avg_buf.pop(0)
         self.x0 = sum(self.avg_buf) / len(self.avg_buf)
         
         poseMsg = Pose()
-        poseMsg.position.x = x0[0]
-        poseMsg.position.y = x0[1]
-        poseMsg.position.z = x0[2]
+        poseMsg.position.x = self.x0[0]
+        poseMsg.position.y = self.x0[1]
+        poseMsg.position.z = self.x0[2]
         self.pos_pub.publish(poseMsg)
 
-    def optimization(dists, x0):
+    def optimization(self, dists, x0):
         def objective_function(x):
             return np.array([norm(p[i]-x)-dists[i]
                             for i in range(4) if dists[i] != 0])
-        return least_squares(objective_function, x0, tol=1e-7,
+        return least_squares(objective_function, x0, ftol=1e-7,
                              bounds=(tank_bound_lower, tank_bound_upper)).x
 
 def main():

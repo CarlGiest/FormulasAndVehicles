@@ -96,6 +96,7 @@ void RangesPlugin::Load(physics::ModelPtr model, sdf::ElementPtr sdf) {
 
   initialized_ = false;
   tag_axis_ = ignition::math::Vector3d(0.0, 1.0, 0.0);
+  tag_axis_bottom_ = ignition::math::Vector3d(0.0, 0.0, -1.0);
 }
 
 void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
@@ -135,6 +136,14 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
       gzmsg << "[ranges plugin] Tag 4 Position found.\n";
       initialized_ = true;
     }
+    // Generate Grid for floor AprilTags
+    for(double j=0.0; j<9.0 ; ++j){
+      for(double i=0.0; i<7.0; ++i){
+        auto tmp_tag = ignition::math::Vector3d(1.56-i*0.25, 0.06+j*0.39375, -1.3);
+        floor_tags_.push_back(tmp_tag);
+        //gzmsg << "[ranges plugin] Tag " << i+j*7.0 << " pos at " << tmp_tag << "\n";
+      }
+    }
   }
 
   if ((dt > 1.0 / pub_rate_) && (initialized_)) {
@@ -146,48 +155,66 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
     // get world pose
     ignition::math::Vector3d pos_sensor =
         model_->GetLink("range_sensor_link")->WorldPose().Pos();
-            gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_sensor
-           << " \n";
+    // gzmsg << "[ranges_plugin] Pos Tag 1 " << pos_sensor << " \n";
     // get orientation of body x-axis
     ignition::math::Vector3d x_unit_vector(1.0, 0.0, 0.0);
     ignition::math::Vector3d body_x_axis = model_->GetLink("range_sensor_link")
                                                ->WorldPose()
                                                .Rot()
                                                .RotateVector(x_unit_vector);
-    
-    ignition::math::Vector3d pos_ring =
-                  model_->GetLink("ring::base_link")->WorldPose().Pos();
+    ignition::math::Vector3d z_unit_vector(0.0, 0.0, -1.0);
+    ignition::math::Vector3d body_z_axis = model_->GetLink("range_sensor_link")
+                                               ->WorldPose()
+                                               .Rot()
+                                               .RotateVector(z_unit_vector);
+    // ignition::math::Vector3d pos_ring =
+    //               model_->GetLink("ring::base_link")->WorldPose().Pos();
+    auto model_ring = world_->ModelByName("ring");
+    ignition::math::Vector3d pos_ring;
+    if(model_ring && model_ring->GetChildLink("base_link")){
+      pos_ring = world_->ModelByName("ring")
+                       ->GetChildLink("base_link")
+                       ->WorldPose()
+                       .Pos();
+      //gzmsg << "[ranges_plugin] Ring" << pos_ring << "\n";
+    }
     auto pos_tag_1_abs =  pos_ring + pos_tag_1_;
     auto pos_tag_2_abs =  pos_ring + pos_tag_2_;
     auto pos_tag_3_abs =  pos_ring + pos_tag_3_;
     auto pos_tag_4_abs =  pos_ring + pos_tag_4_;
-
     // tag 1
-    ignition::math::Vector3d sensor_to_tag_1 = pos_tag_1_ - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_1 = pos_tag_1_abs - pos_sensor;
     if (IsDetected(sensor_to_tag_1, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(1, sensor_to_tag_1);
       msg_array.measurements.push_back(msg);
     }
 
     // tag 2
-    ignition::math::Vector3d sensor_to_tag_2 = pos_tag_2_ - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_2 = pos_tag_2_abs - pos_sensor;
     if (IsDetected(sensor_to_tag_2, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(2, sensor_to_tag_2);
       msg_array.measurements.push_back(msg);
     }
 
     // tag 3
-    ignition::math::Vector3d sensor_to_tag_3 = pos_tag_3_ - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_3 = pos_tag_3_abs - pos_sensor;
     if (IsDetected(sensor_to_tag_3, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(3, sensor_to_tag_3);
       msg_array.measurements.push_back(msg);
     }
 
     // tag 4
-    ignition::math::Vector3d sensor_to_tag_4 = pos_tag_4_ - pos_sensor;
+    ignition::math::Vector3d sensor_to_tag_4 = pos_tag_4_abs - pos_sensor;
     if (IsDetected(sensor_to_tag_4, body_x_axis)) {
       range_sensor::RangeMeasurement msg = GetRangeMsg(4, sensor_to_tag_4);
       msg_array.measurements.push_back(msg);
+    }
+    for(int i=0; i<63; ++i){
+      ignition::math::Vector3d tmp_to_tag = floor_tags_.at(i) - pos_sensor;
+      if (IsDetected_bottom(tmp_to_tag, body_z_axis)) {
+        range_sensor::RangeMeasurement msg = GetRangeMsg(i+5, tmp_to_tag);
+        msg_array.measurements.push_back(msg);
+      }
     }
 
     ranges_pub_.publish(msg_array);
@@ -207,7 +234,6 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_visible =
       (fov_angle < max_fov_angle_) && (viewing_angle < max_viewing_angle_);
-
   // measurement might be dropped for whatever reason
   double p = uniform_real_distribution_(random_generator_);
   // additional drop probability that increases with distance to tag
@@ -216,7 +242,30 @@ bool RangesPlugin::IsDetected(ignition::math::Vector3d sensor_to_tag,
 
   bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
   
-  return true;
+  return is_visible && is_not_dropped;
+  //return true;
+}
+
+bool RangesPlugin::IsDetected_bottom(ignition::math::Vector3d sensor_to_tag,
+                              ignition::math::Vector3d body_z_axis ) {
+  // determine fov angle for both x and y
+  double fov_angle = acos(sensor_to_tag.Dot(body_z_axis) /
+                            (sensor_to_tag.Length() * body_z_axis.Length()));                         
+  double viewing_angle = acos(tag_axis_bottom_.Dot(body_z_axis) /
+                                (tag_axis_bottom_.Length() * body_z_axis.Length()));
+  bool is_visible =
+        (fov_angle < max_fov_angle_) && (viewing_angle < max_viewing_angle_);
+  gzmsg << "[ranges_plugin] (fov, view) " << fov_angle << ", " << viewing_angle << "\n";
+  // measurement might be dropped for whatever reason
+  double p = uniform_real_distribution_(random_generator_);
+  // additional drop probability that increases with distance to tag
+  double p_dist = uniform_real_distribution_(random_generator_);
+  double drop_prob_dist = GetDistanceDropProp(sensor_to_tag.Length());
+
+  bool is_not_dropped = (p > drop_prob_) && (p_dist > drop_prob_dist);
+
+  return is_visible && is_not_dropped;
+  // return true;
 }
 
 range_sensor::RangeMeasurement RangesPlugin::GetRangeMsg(

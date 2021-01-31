@@ -14,16 +14,10 @@ class RangeSensorNode():
                                          queue_size=1)
         self.simulation = rospy.get_param("~sim", True)
 
-        if self.simulation:
-            rospy.Subscriber("tag_detections_sim",
-                             RangeMeasurementArray,
-                             self.on_sim_dist,
-                             queue_size=1)
-        else:
-            rospy.Subscriber("tag_detections",
-                             AprilTagDetectionArray,
-                             self.on_apriltag,
-                             queue_size=1)
+        rospy.Subscriber("tag_detections_sim",
+                         RangeMeasurementArray,
+                         self.on_sim_dist,
+                         queue_size=1)
 
     def on_sim_dist(self, msg):
         self.range_pub.publish(msg)

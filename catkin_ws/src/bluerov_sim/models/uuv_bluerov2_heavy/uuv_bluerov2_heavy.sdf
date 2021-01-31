@@ -45,16 +45,16 @@
             </inertial>
         </link>
 
-        <joint name="pressure_sensor_joint" type="revolute">
+        <joint name="pressure_sensor_joint" type="fixed">
             <child>pressure_sensor_link</child>
             <parent>base_link</parent>
-            <axis>
+            <!-- <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
                     <upper>0</upper>
                     <lower>0</lower>
                 </limit>
-            </axis>
+            </axis>revolute -->
         </joint>
 
         <link name="range_sensor_link">
@@ -72,16 +72,16 @@
             </inertial>
         </link>
 
-        <joint name="range_sensor_joint" type="revolute">
+        <joint name="range_sensor_joint" type="fixed">
             <child>range_sensor_link</child>
             <parent>base_link</parent>
-            <axis>
+            <!-- <axis>
                 <xyz>0 0 1</xyz>
                 <limit>
                     <upper>0</upper>
                     <lower>0</lower>
                 </limit>
-            </axis>
+            </axis> -->
         </joint>
 
         <plugin name="pressure_plugin" filename="libgazebo_pressure_plugin.so">
@@ -93,12 +93,12 @@
         <plugin name="range_sensor_plugin" filename="libgazebo_range_sensor_plugin.so">
             <robotNamespace />
             <pubRate>7.0</pubRate>
-            <rangeNoiseStd>0.1</rangeNoiseStd>
-            <fovCamera>100</fovCamera>
-            <viewingAngle>140</viewingAngle>
-            <dropProb>0.05</dropProb>
-            <maxDetectionDist>4.0</maxDetectionDist>
-            <distDropProbExponent>2.0</distDropProbExponent>
+            <rangeNoiseStd>0.0</rangeNoiseStd>
+            <fovCamera>180</fovCamera>
+            <viewingAngle>180</viewingAngle>
+            <dropProb>0.0</dropProb>
+            <maxDetectionDist>40.0</maxDetectionDist>
+            <distDropProbExponent>0.0</distDropProbExponent>
         </plugin>
 
         <link name="thruster1">
@@ -456,6 +456,43 @@
                     </script>
                 </material>
             </visual>
+            <collision name='collision_hook'>
+                <max_contacts>10</max_contacts>
+                <pose frame=''>0 0 0 0 0 0</pose>
+                <geometry>
+                  <mesh>
+                    <uri>model://uuv_bluerov2_heavy/meshes/Hook.dae</uri>
+                    <scale>1 1 1</scale>
+                  </mesh>
+                </geometry>
+                <surface>
+                  <bounce>
+                    <restitution_coefficient>0</restitution_coefficient>
+                    <threshold>1e+06</threshold>
+                  </bounce>
+                  <contact>
+                    <collide_without_contact>0</collide_without_contact>
+                    <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+                    <collide_bitmask>1</collide_bitmask>
+                    <ode>
+                      <soft_cfm>0</soft_cfm>
+                      <soft_erp>0.2</soft_erp>
+                      <kp>1e+13</kp>
+                      <kd>1</kd>
+                      <max_vel>0.01</max_vel>
+                      <min_depth>0</min_depth>
+                    </ode>
+                    <bullet>
+                      <split_impulse>1</split_impulse>
+                      <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                      <soft_cfm>0</soft_cfm>
+                      <soft_erp>0.2</soft_erp>
+                      <kp>1e+13</kp>
+                      <kd>1</kd>
+                    </bullet>
+                  </contact>
+                </surface>
+              </collision>
         </link>
 
         <joint name="hook_joint" type="fixed">

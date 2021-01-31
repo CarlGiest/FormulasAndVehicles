@@ -60,7 +60,7 @@ class transControlNode():
                                                   Float64,
                                                   queue_size=1)
 
-        self.setpoint_sub = rospy.Subscriber("rng_pos",
+        self.setpoint_sub = rospy.Subscriber("ring_pos",
                                              Pose,
                                              self.pos_callback,
                                              queue_size=1)

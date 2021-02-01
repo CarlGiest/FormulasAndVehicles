@@ -11,19 +11,13 @@ import tf.transformations as trans
 import numpy as np
 from numpy.linalg import norm,inv
 
-# tag1 = np.array([0.0, 0.0, 0.0])
-# tag2 = np.array([0.0, 0.0, 1.0])
-# tag3 = np.array([0.0, 1.0, 0.0])
-# tag4 = np.array([0.0, 1.0, 1.0])
-# tag1 = np.array([0.5, 3.35, -0.5])
-# tag2 = np.array([1.1, 3.35, -0.5])
-# tag3 = np.array([0.5, 3.35, -0.9])
-# tag4 = np.array([1.1, 3.35, -0.9])
-tag1 = np.array([0.7, 3.35, -0.28])
-tag2 = np.array([1.3, 3.35, -0.28])
-tag3 = np.array([0.7, 3.35, -0.28])
-tag4 = np.array([1.3, 3.35, -0.28])
-p = [tag1, tag2, tag3, tag4]
+p = []
+tank_bound_lower = np.array([0.0, 0.0, -1.3])
+tank_bound_upper = np.array([2.0, 4.0, 0.0])
+
+for j in range(9):
+    for i in range(7):
+        p.append(np.array([1.56-i*0.25, 0.06+j*0.39375, -1.3]))
 range_buf = np.zeros(len(p))
 tank_bound_lower = np.array([0.0, 0.0, -1.0])
 tank_bound_upper = np.array([1.6, 3.35, 0.0])
@@ -61,13 +55,11 @@ class localizationNode():
 
     def rangeCallback(self, msg):
         with self.data_lock:
-            dists = np.zeros(4)
-            if len(msg.measurements) < 2:
-                # rospy.loginfo('Got to few tags')
-                return
+            dists = np.zeros(63)
             for measure in msg.measurements:
-                id = measure.id
-                dists[id-1] = measure.range
+                if measure.id >= 5:
+                    id = measure.id-4
+                    dists[id-1] = measure.range
             tagNumerMsg = Int16()
             tagNumerMsg.data = len([1 for dist in dists if dist != 0])
             self.tag_num_pub.publish(tagNumerMsg)
@@ -126,7 +118,7 @@ def kalmanP(dists, pressure, x0, Sigma0):
     Q = np.diag([0.01, 0.01, 0.01])     # system noise covariance
 
     # Output and measurement noise covariance matrix calculation for up to 4 AprilTag distances and the pressure sensor reading
-    iter = np.array([0, 1, 2, 3])[dists != 0]
+    iter = np.array(range(dists.shape[0]))[dists != 0]
     num_tags = iter.shape[0]
     C = np.zeros((num_tags + 1, 3))
     measurement_covs = np.zeros(num_tags + 1)

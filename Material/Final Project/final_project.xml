@@ -16,7 +16,7 @@
                                 <title_visible>true</title_visible>
                             </x_axis>
                             <y_axis>
-                                <custom_title>Pose/Gain</custom_title>
+                                <custom_title>Thrust</custom_title>
                                 <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </y_axis>
@@ -187,13 +187,13 @@
                     <axes>
                         <axes>
                             <x_axis>
-                                <custom_title>Untitled Axis</custom_title>
-                                <title_type>0</title_type>
+                                <custom_title>Time</custom_title>
+                                <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </x_axis>
                             <y_axis>
-                                <custom_title>Untitled Axis</custom_title>
-                                <title_type>0</title_type>
+                                <custom_title>Tags</custom_title>
+                                <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </y_axis>
                         </axes>
@@ -263,13 +263,13 @@
                     <axes>
                         <axes>
                             <x_axis>
-                                <custom_title>Untitled Axis</custom_title>
-                                <title_type>0</title_type>
+                                <custom_title>Time</custom_title>
+                                <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </x_axis>
                             <y_axis>
-                                <custom_title>Untitled Axis</custom_title>
-                                <title_type>0</title_type>
+                                <custom_title>Pose [m]</custom_title>
+                                <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </y_axis>
                         </axes>
@@ -615,13 +615,13 @@
                     <axes>
                         <axes>
                             <x_axis>
-                                <custom_title>Untitled Axis</custom_title>
-                                <title_type>0</title_type>
+                                <custom_title>Time</custom_title>
+                                <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </x_axis>
                             <y_axis>
-                                <custom_title>Untitled Axis</custom_title>
-                                <title_type>0</title_type>
+                                <custom_title>Angle [rad]</custom_title>
+                                <title_type>1</title_type>
                                 <title_visible>true</title_visible>
                             </y_axis>
                         </axes>

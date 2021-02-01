@@ -5,7 +5,7 @@
     <include file="$(find bluerov_sim)/launch/final_project_world.launch">
         <arg name="gui" value="true"/>
         <arg name="camera" value="false" />
-        <arg name="paused" value="false" />
+        <arg name="paused" value="true" />
     </include>
 
     <node name="strategy_planer" pkg="nav_controller" type="strategy_planer.py" output="screen">

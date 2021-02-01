@@ -16,6 +16,7 @@ class strategyNode():
         self.pos_threshold = 0.1
         self.pos_threshold_y= 0.1
         self.actual_pos = np.array([10.0, 10.0, 10.0])
+        self.lock = False
 
         self.strategy_pub = rospy.Publisher("strategy",
                                             String,
@@ -50,6 +51,10 @@ class strategyNode():
 
     def update_strategy(self, *args):
         msg = String()
+        if self.lock:
+            msg.data = "rescue"
+            self.strategy_pub.publish(msg)
+            return
         if self.tagNumber < self.tag_threshold:
             msg.data = "search"
         elif abs(self.actual_pos[0]) > self.pos_threshold or abs(self.actual_pos[2]) > self.pos_threshold:
@@ -58,6 +63,7 @@ class strategyNode():
             msg.data = "stich"
         else:
             msg.data = "rescue"
+            self.lock = True
         self.strategy_pub.publish(msg)
         
 

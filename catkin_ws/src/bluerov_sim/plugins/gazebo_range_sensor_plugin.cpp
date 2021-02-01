@@ -103,39 +103,35 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
   common::Time current_time = world_->SimTime();
   double dt = (current_time - last_pub_time_).Double();
 
-  if (true && !initialized_) {
+  if (true || !initialized_) {
     auto model = world_->ModelByName("ring");
     if (model && model->GetChildLink("tag_1_link")) {
       pos_tag_1_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_1_link")
                        ->WorldPose()
                        .Pos();
-      gzmsg << "[ranges plugin] Tag 1 Position at "<< pos_tag_1_
-           << " \n";
+      // gzmsg << "[ranges plugin] Tag 1 Position at "<< pos_tag_1_ << " \n";
     }
     if (model && model->GetChildLink("tag_2_link")) {
       pos_tag_2_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_2_link")
                        ->WorldPose()
                        .Pos();
-      gzmsg << "[ranges plugin] Tag 2 Position at "<< pos_tag_2_
-           << " \n";
+      // gzmsg << "[ranges plugin] Tag 2 Position at "<< pos_tag_2_ << " \n";
     }
     if (model && model->GetChildLink("tag_3_link")) {
       pos_tag_3_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_3_link")
                        ->WorldPose()
                        .Pos();
-      gzmsg << "[ranges plugin] Tag 3 Position at "<< pos_tag_3_
-           << " \n";
+      // gzmsg << "[ranges plugin] Tag 3 Position at "<< pos_tag_3_ << " \n";
     }
     if (model && model->GetChildLink("tag_4_link")) {
       pos_tag_4_ = world_->ModelByName("ring")
                        ->GetChildLink("tag_4_link")
                        ->WorldPose()
                        .Pos();
-      gzmsg << "[ranges plugin] Tag 4 Position at "<< pos_tag_4_
-           << " \n";
+      // gzmsg << "[ranges plugin] Tag 4 Position at "<< pos_tag_4_ << " \n";
       initialized_ = true;
     }
     // Generate Grid for floor AprilTags

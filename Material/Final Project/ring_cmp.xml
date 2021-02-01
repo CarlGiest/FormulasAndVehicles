@@ -99,7 +99,7 @@
                                         <relative_minimum>-1000</relative_minimum>
                                         <type>0</type>
                                     </scale>
-                                    <topic>ring</topic>
+                                    <topic>/ringWorld</topic>
                                     <type>geometry_msgs/Pose</type>
                                 </y_axis>
                             </axes>

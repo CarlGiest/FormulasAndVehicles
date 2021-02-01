@@ -15,9 +15,6 @@ class strategyNode():
         self.tag_threshold = 3
         self.pos_threshold = 0.1
         self.actual_pos = np.array([10.0, 10.0, 10.0])
-        self.strategy_frequency = 20.0
-
-        rospy.Timer(rospy.Duration(1.0/self.strategy_frequency), self.update_strategy)
 
         self.strategy_pub = rospy.Publisher("strategy",
                                             String,
@@ -27,6 +24,7 @@ class strategyNode():
                                              Int16,
                                              self.tag_callback,
                                              queue_size=1)
+
         self.doArm = rospy.get_param("~doArm", False)
         if self.doArm:
             self.arm_vehicle()
@@ -35,30 +33,32 @@ class strategyNode():
                                              Pose,
                                              self.pos_callback,
                                              queue_size=1)
+    
+        self.strategy_frequency = 5.0
+        rospy.Timer(rospy.Duration(1.0/self.strategy_frequency), self.update_strategy)
 
     def tag_callback(self, msg):
-        with self.data_lock:
-            self.tagNumber = msg.data
+        # with self.data_lock:
+        self.tagNumber = msg.data
 
     def pos_callback(self, msg):
-        with self.data_lock:
-            self.actual_pos[0] = msg.position.x
-            self.actual_pos[1] = msg.position.y
-            self.actual_pos[2] = msg.position.z
+        #with self.data_lock:
+        self.actual_pos[0] = msg.position.x
+        self.actual_pos[1] = msg.position.y
+        self.actual_pos[2] = msg.position.z
 
-    def update_strategy(self):
+    def update_strategy(self, *args):
         msg = String()
         if self.tagNumber < self.tag_threshold:
             msg.data = "search"
-        elif self.tagNumber > self.tag_threshold and \
-            (abs(self.actual_pos[0]) > self.pos_threshold or abs(self.actual_pos[2]) > self.pos_threshold):
+        elif abs(self.actual_pos[0]) > self.pos_threshold or abs(self.actual_pos[2]) > self.pos_threshold:
             msg.data = "approach"
-        elif self.tagNumber > self.tag_threshold and \
-            abs(self.actual_pos[1]) > self.pos_threshold:
+        elif abs(self.actual_pos[1]) > self.pos_threshold:
             msg.data = "stich"
         else:
             msg.data = "rescue"
         self.strategy_pub.publish(msg)
+        
 
     def arm_vehicle(self):
         # wait until the arming serivce becomes available
@@ -70,7 +70,6 @@ class strategyNode():
             rospy.logwarn("Could not arm vehicle. Keep trying.")
             rospy.sleep(1.0)
         rospy.loginfo("Armed successfully.")
-        self.update_strategy()
 
     def run(self):
         rospy.spin()

@@ -11,24 +11,20 @@ class transControlNode():
         rospy.init_node("trans_control")
 
         self.data_lock = threading.RLock()
-        self.strategy = "follow"
+        self.strategy = "search"
 
-        self.control_frequency = 20.0
-
-        rospy.Timer(rospy.Duration(1.0/self.control_frequency), self.trans_control)
-
-        self.vorsteuerung = -0.05
-        # Parameter static
-        self.xy_p_gain = 0.105
-        self.xy_i_gain = 0.08
+        self.vorsteuerung = 0.055
+        # Parameter xy
+        self.xy_p_gain = 0.15
+        self.xy_i_gain = 0.01
         self.xy_d_gain = 0.05
-        # Dynamic Parameter
-        self.vertical_p_gain = 0.1735
-        self.vertical_i_gain = 0.045
+        # Parameter z
+        self.vertical_p_gain = 0.2
+        self.vertical_i_gain = 0.1
         self.vertical_d_gain = 0.05
 
         self.setpoint_buf_len = 5
-        self.i_buf_len = 20
+        self.i_buf_len = 10
         self.i_buf = Pose()
         self.i_buf.position.x = [0.0] * self.i_buf_len
         self.i_buf.position.y = [0.0] * self.i_buf_len
@@ -87,10 +83,12 @@ class transControlNode():
         self.vor_static_sub = rospy.Subscriber("vor", Float64,
                                                self.vor_callback,
                                                queue_size=1)
+        
+        self.trans_control_frequency = 5.0
+        rospy.Timer(rospy.Duration(1.0/self.trans_control_frequency), self.trans_control)
 
     def strategy_callback(self, msg):
         self.strategy = msg.data
-        #self.trans_control()
 
     def kp_xy_callback(self, msg):
         with self.data_lock:
@@ -140,23 +138,27 @@ class transControlNode():
 
     def pos_callback(self, msg):
         with self.data_lock:
-            if self.strategy == "approach":
-                self.pos.position.x = msg.position.x
-                self.pos.position.y = msg.position.y-0.3
-                self.pos.position.z = msg.position.z
-                
+            if self.strategy == "search":
+                #rospy.loginfo("search")
+                self.pos.position.x = -msg.position.x
+                self.pos.position.y = msg.position.y
+                self.pos.position.z = -msg.position.z
+            elif self.strategy == "approach":
+                #rospy.loginfo("approach")
+                self.pos.position.x = -msg.position.x
+                self.pos.position.y = msg.position.y-0.2
+                self.pos.position.z = -msg.position.z
             elif self.strategy == "stich":
-                self.pos.position.x = msg.position.x
+                #rospy.loginfo("stich")
+                self.pos.position.x = -msg.position.x
                 self.pos.position.y = msg.position.y
-                self.pos.position.z = msg.position.z
-
+                self.pos.position.z = -msg.position.z
             elif self.strategy == "rescue":
-                self.pos.position.x = msg.position.x
+                #rospy.loginfo("rescue")
+                self.pos.position.x = -msg.position.x
                 self.pos.position.y = msg.position.y
-                self.pos.position.z = 0.0
-
+                self.pos.position.z = 0.5
             self.sensor_time = rospy.get_time()
-            #self.trans_control()
 
     def setBuffer(self, buf, msgAppend, len):
         for i in range(0, len-1):
@@ -169,36 +171,22 @@ class transControlNode():
         buf.y[-1] = msgAppend.y
         buf.z[-1] = msgAppend.z
         return buf
-    
-    def publish(self):
-        # rospy.loginfo("Hallo")
-        msg_thrust = Float64()
-        msg_thrust.data = self.thrust
-        self.thrust_pub.publish(msg_thrust)
-
-        msg_vertical_thrust = Float64()
-        msg_vertical_thrust.data = self.vertical_thrust
-        self.vertical_thrust_pub.publish(msg_vertical_thrust)
-
-        msg_lateral_thrust = Float64()
-        msg_lateral_thrust.data = self.lateral_thrust
-        self.lateral_thrust_pub.publish(msg_lateral_thrust)
         
     def trans_control(self, *args):
         if rospy.get_time() - self.sensor_time > 5:
-            # rospy.logwarn("Sensor Timeout")
+            #rospy.logwarn("Sensor Timeout")
             self.thrust = 0.0
             self.lateral_thrust = 0.0
             self.vertical_thrust = self.vorsteuerung
             self.publish()
             return
         elif self.strategy == "search":
-            # rospy.loginfo("searching")
             self.thrust = 0.0
-            self.vertical_thrust = self.vorsteuerung
             self.lateral_thrust = 0.0
+            self.vertical_thrust = self.vorsteuerung
             self.publish()
             return
+        
         # rospy.loginfo("following")
         i_buf_Append = Pose()
         i_buf_Append.position.x = self.pos.position.x
@@ -224,7 +212,7 @@ class transControlNode():
 
     def getThrust(self, pos, i_buf, vor_activate):
         thrust = (self.act_p_gain * pos
-                  + self.act_i_gain * sum(i_buf) * (1.0/self.control_frequency)
+                  + self.act_i_gain * sum(i_buf) * (1.0/self.trans_control_frequency)
                   + self.act_d_gain * (i_buf[-1] - i_buf[-2]))
         if vor_activate:
             thrust += self.vorsteuerung

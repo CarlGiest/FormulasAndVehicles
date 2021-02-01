@@ -27,6 +27,8 @@ p = np.array([tag1, tag2, tag3, tag4])
 tank_bound_lower = np.array([-4.0, 0.0, -1.0])
 tank_bound_upper = np.array([4.0, 4.0, 1.0])
 
+hook_offset = np.array([0.0, -0.2, -0.1])
+
 class localizationNode():
     def __init__(self):
         rospy.init_node("ringLocalizationNode")
@@ -67,9 +69,9 @@ class localizationNode():
             # self.x0 = sum(self.avg_buf) / len(self.avg_buf)
             
             poseMsg = Pose()
-            poseMsg.position.x = self.x0[0]
-            poseMsg.position.y = self.x0[1]
-            poseMsg.position.z = self.x0[2]
+            poseMsg.position.x = self.x0[0] + hook_offset[0]
+            poseMsg.position.y = self.x0[1] + hook_offset[1]
+            poseMsg.position.z = self.x0[2] + hook_offset[2]
             self.pos_pub.publish(poseMsg)
 
     def optimization(self, dists, x0):

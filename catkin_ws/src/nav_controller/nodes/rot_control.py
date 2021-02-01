@@ -11,7 +11,6 @@ class rotControlNode():
         rospy.init_node("rot_control")
 
         self.data_lock = threading.RLock()
-        self.strategy = "search"
 
         self.search_thrust = 0.3
 
@@ -29,7 +28,7 @@ class rotControlNode():
         self.tags_z = -0.5
         self.tags_y = 3.35
 
-        self.rot_p_gain = 0.085
+        self.rot_p_gain = 0.2
         self.rot_i_gain = 0.0
         self.rot_d_gain = 0.0
 
@@ -64,23 +63,11 @@ class rotControlNode():
                                                   self.search_thrust_callback,
                                                   queue_size=1)
 
-    def publish(self):
-        # rospy.loginfo("Hallo")
-        msg_roll = Float64()
-        msg_roll.data = self.roll_thrust
-        self.roll_pub.publish(msg_roll)
-
-        msg_pitch = Float64()
-        msg_pitch.data = self.pitch_thrust
-        self.pitch_pub.publish(msg_pitch)
-
-        msg_yaw = Float64()
-        msg_yaw.data = self.yaw_thrust
-        self.yaw_pub.publish(msg_yaw)
+        self.rot_control_frequency = 5.0
+        rospy.Timer(rospy.Duration(1.0/self.rot_control_frequency), self.rot_control(self))
 
     def strategy_callback(self, msg):
         self.strategy = msg.data
-        self.control()
 
     def pos_callback(self, msg):
         self.tags_x = 1.0
@@ -98,7 +85,6 @@ class rotControlNode():
         self.pitch = msg.y
         self.yaw = msg.z
         # rospy.loginfo(self.yaw)
-        self.control()
 
     def search_thrust_callback(self, msg):
         with self.data_lock:
@@ -106,26 +92,39 @@ class rotControlNode():
                 self.search_thrust = msg.data
             else:
                 rospy.logwarn("Received negative turning thrust")
-            self.control()
 
     # might be redundant if only self.run is used
-    def control(self):
-        if self.strategy == "search":
-            # rospy.logwarn("searching")
-            self.roll_thrust = 0.0
-            self.pitch_thrust = 0.0
-            self.yaw_thrust = self.search_thrust
-            self.yaw_thrust = (self.rot_p_gain * (self.yaw_setpoint - self.yaw))
-            self.publish()
-            return
-        elif self.strategy == "follow":
+    def rot_control(self, *args):
+        # if self.strategy == "search":
+        #     # rospy.logwarn("searching")
+        #     self.roll_thrust = 0.0
+        #     self.pitch_thrust = 0.0
+        #     self.yaw_thrust = self.search_thrust
+        #     self.yaw_thrust = (self.rot_p_gain * (self.yaw_setpoint - self.yaw))
+        #     self.publish()
+        #     return
+        # elif self.strategy == "follow":
             # rospy.logwarn("following")
-            self.roll_thrust = (self.rot_p_gain * (self.roll_setpoint - self.roll))
-            self.pitch_thrust = (self.rot_p_gain * (self.pitch_setpoint - self.pitch))
-            self.yaw_thrust = (self.rot_p_gain * (self.yaw_setpoint - self.yaw))
-            self.publish()
-        else:
-            return
+        self.roll_thrust = (self.rot_p_gain * (self.roll_setpoint - self.roll))
+        self.pitch_thrust = (self.rot_p_gain * (self.pitch_setpoint - self.pitch))
+        self.yaw_thrust = (self.rot_p_gain * (self.yaw_setpoint - self.yaw))
+        self.publish()
+        # else:
+        #     return
+
+    def publish(self):
+        # rospy.loginfo("Hallo")
+        msg_roll = Float64()
+        msg_roll.data = self.roll_thrust
+        self.roll_pub.publish(msg_roll)
+
+        msg_pitch = Float64()
+        msg_pitch.data = self.pitch_thrust
+        self.pitch_pub.publish(msg_pitch)
+
+        msg_yaw = Float64()
+        msg_yaw.data = self.yaw_thrust
+        self.yaw_pub.publish(msg_yaw)
 
     def run(self):
         rospy.spin()

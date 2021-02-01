@@ -48,14 +48,15 @@ class ringTranslator():
     def transform(self):
         # R = tf.euler_matrix(-self.euler[0], -self.euler[1], -self.euler[2], 'sxyz')
         # print(self.euler)
-        yaw = -self.euler[2]
+        yaw = -(self.euler[2]-np.pi/2)
         R = np.array([[np.cos(yaw), -np.sin(yaw), 0],
                       [np.sin(yaw),  np.cos(yaw), 0],
                       [0, 0, 1]])
         ring_rel_tank = np.matmul(R, self.ring_rel)
-        self.ring_abs = ring_rel_tank + self.pos - \
-            np.array([0.2, -0.25, 0.2])
+        self.ring_abs = ring_rel_tank + self.pos #- \
+           # np.array([0.2, -0.25, 0.2])
         # print(self.ring_abs)
+        print(ring_rel_tank, self.ring_rel)
         self.publish()
 
     def publish(self):

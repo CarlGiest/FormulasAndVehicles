@@ -33,10 +33,6 @@ xref = np.array([t[0] for t in p])
 yref = np.array([t[1] for t in p])
 zref = np.array([t[2] for t in p])
 
-doX0_avg = True
-doDist_avg = True
-
-
 class localizationNode():
     def __init__(self):
         rospy.init_node("localizationNode", log_level = rospy.DEBUG)
@@ -78,14 +74,7 @@ class localizationNode():
             
             (self.x0, self.Sigma0) = kalmanP(dists, self.depth * 1.0e4, self.x0, self.Sigma0)
 
-        if doX0_avg:
-            if len(self.avg_buf) > self.avg_buf_len:
-                self.avg_buf.pop(0)
-            self.avg_buf.append(self.x0)
-
-            x0 = sum(self.avg_buf) / len(self.avg_buf)
-        else:
-            x0 = self.x0
+        x0 = self.x0
 
         poseMsg = Pose()
         poseMsg.position.x = x0[0]

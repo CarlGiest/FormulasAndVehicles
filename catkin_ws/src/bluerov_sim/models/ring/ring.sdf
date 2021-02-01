@@ -184,23 +184,35 @@
     <joint name="tag_1_joint" type="fixed">
       <parent>base_link</parent>
       <child>tag_1_link</child>
-  </joint>
+    </joint>
 
-  <joint name="tag_2_joint" type="fixed">
-    <parent>base_link</parent>
-    <child>tag_2_link</child>
-</joint>
+    <joint name="tag_2_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>tag_2_link</child>
+    </joint>
 
-<joint name="tag_3_joint" type="fixed">
-  <parent>base_link</parent>
-  <child>tag_3_link</child>
-</joint>
+    <joint name="tag_3_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>tag_3_link</child>
+    </joint>
 
-<joint name="tag_4_joint" type="fixed">
-  <parent>base_link</parent>
-  <child>tag_4_link</child>
-</joint>
+    <joint name="tag_4_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>tag_4_link</child>
+    </joint>
 
     <static>0</static>
+
+
+    <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+      <alwaysOn>true</alwaysOn>
+      <updateRate>30.0</updateRate>
+      <bodyName>base_link</bodyName>
+      <topicName>ground_truth/stateRing</topicName>
+      <gaussianNoise>0.0</gaussianNoise>
+      <frameName>map</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets>
+    </plugin>
   </model>
 </sdf>

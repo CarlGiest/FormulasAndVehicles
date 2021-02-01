@@ -15,9 +15,9 @@ class transControlNode():
 
         self.vorsteuerung = 0.055
         # Parameter xy
-        self.xy_p_gain = 0.15
-        self.xy_i_gain = 0.01
-        self.xy_d_gain = 0.05
+        self.xy_p_gain = 0.14
+        self.xy_i_gain = 0.05
+        self.xy_d_gain = 0.5
         # Parameter z
         self.vertical_p_gain = 0.2
         self.vertical_i_gain = 0.1
@@ -173,19 +173,19 @@ class transControlNode():
         return buf
         
     def trans_control(self, *args):
-        if rospy.get_time() - self.sensor_time > 5:
+        if rospy.get_time() - self.sensor_time > 2:
             #rospy.logwarn("Sensor Timeout")
             self.thrust = 0.0
             self.lateral_thrust = 0.0
             self.vertical_thrust = self.vorsteuerung
             self.publish()
             return
-        elif self.strategy == "search":
-            self.thrust = 0.0
-            self.lateral_thrust = 0.0
-            self.vertical_thrust = self.vorsteuerung
-            self.publish()
-            return
+        # elif self.strategy == "search":
+        #     self.thrust = 0.0
+        #     self.lateral_thrust = 0.0
+        #     self.vertical_thrust = self.vorsteuerung
+        #     self.publish()
+        #     return
         
         # rospy.loginfo("following")
         i_buf_Append = Pose()

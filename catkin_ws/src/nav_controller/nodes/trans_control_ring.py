@@ -154,8 +154,8 @@ class transControlNode():
                 self.pos.position.z = -msg.position.z
             elif self.strategy == "rescue":
                 #rospy.loginfo("rescue")
-                self.pos.position.x = -msg.position.x
-                self.pos.position.y = msg.position.y
+                self.pos.position.x = 0.0
+                self.pos.position.y = 0.0
                 self.pos.position.z = 0.5
             self.sensor_time = rospy.get_time()
 

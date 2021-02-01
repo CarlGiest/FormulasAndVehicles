@@ -56,7 +56,7 @@ class ringTranslator():
         self.ring_abs = ring_rel_tank + self.pos #- \
            # np.array([0.2, -0.25, 0.2])
         # print(self.ring_abs)
-        print(ring_rel_tank, self.ring_rel)
+        # print(ring_rel_tank, self.ring_rel)
         self.publish()
 
     def publish(self):

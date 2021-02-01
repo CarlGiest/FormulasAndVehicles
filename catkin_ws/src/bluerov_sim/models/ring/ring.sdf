@@ -19,7 +19,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/carl/Uni/fav/catkin_ws/src/bluerov_sim/models/ring/meshes/ring.dae</uri>
+            <uri>model://ring/meshes/ring.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -39,7 +39,7 @@
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/carl/Uni/fav/catkin_ws/src/bluerov_sim/models/ring/meshes/ring.dae</uri>
+            <uri>model://ring/meshes/ring.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>

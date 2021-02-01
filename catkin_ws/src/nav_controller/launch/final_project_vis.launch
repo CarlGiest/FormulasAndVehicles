@@ -28,4 +28,6 @@
     <!-- <node name="Kalman_localizationNode" pkg="nav_controller" type="kalman.py" output="screen" /> -->
 
     <node name="ring_to_world_calc" pkg="nav_controller" type="ring_in_world.py" output="screen" />
+    <node name="alarmNode" pkg="nav_controller" type="alarm.py" output="screen" />
+
 </launch>

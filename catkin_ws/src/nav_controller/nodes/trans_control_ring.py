@@ -83,7 +83,7 @@ class transControlNode():
         self.vor_static_sub = rospy.Subscriber("vor", Float64,
                                                self.vor_callback, queue_size=1)
         
-        self.trans_control_frequency = 5.0
+        self.trans_control_frequency = 10.0
         rospy.Timer(rospy.Duration(1.0/self.trans_control_frequency), self.trans_control)
 
     def strategy_callback(self, msg):

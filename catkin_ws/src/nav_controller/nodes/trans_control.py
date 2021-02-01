@@ -65,7 +65,7 @@ class transControlNode():
                                              self.on_setpoint,
                                              queue_size=1)
 
-        self.depth_sub = rospy.Subscriber("robot_pos",
+        self.pos_sub = rospy.Subscriber("robot_pos",
                                           Pose,
                                           self.pos_callback,
                                           queue_size=1)

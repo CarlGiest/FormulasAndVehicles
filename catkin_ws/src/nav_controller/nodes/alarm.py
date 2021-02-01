@@ -26,12 +26,11 @@ class alarmNode():
             rospy.loginfo("Maybe I found something")
 
 
-    def alarm_callback(self, *args):
-        msg = Pose()
+    def alarm_callback(self, msg):
         self.actual_pos = np.array([msg.position.x, msg.position.y, msg.position.z])
         if self.tagNumber > self.tag_threshold:
             rospy.logwarn("Alarm!!!!!!!!!     Object found at:")
-            rospy.logwarn()
+            rospy.logwarn(self.actual_pos)
 
     def run(self):
         rospy.spin()

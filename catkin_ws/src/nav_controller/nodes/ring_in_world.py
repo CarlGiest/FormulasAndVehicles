@@ -53,7 +53,8 @@ class ringTranslator():
                       [np.sin(yaw),  np.cos(yaw), 0],
                       [0, 0, 1]])
         ring_rel_tank = np.matmul(R, self.ring_rel)
-        self.ring_abs = ring_rel_tank + self.pos
+        self.ring_abs = ring_rel_tank + self.pos - \
+            np.array([0.2, -0.25, 0.2])
         # print(self.ring_abs)
         self.publish()
 

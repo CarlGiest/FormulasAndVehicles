@@ -13,15 +13,20 @@ class transControlNode():
         self.data_lock = threading.RLock()
         self.strategy = "search"
 
-        self.vorsteuerung = 0.055
+        self.vorsteuerung = 0.07
         # Parameter xy
-        self.xy_p_gain = 0.14
-        self.xy_i_gain = 0.05
-        self.xy_d_gain = 0.5
+        self.xy_p_gain = 0.17
+        self.xy_i_gain = 0.1
+        self.xy_d_gain = 0.13
+        self.stichFaktor = 1.5
         # Parameter z
         self.vertical_p_gain = 0.2
         self.vertical_i_gain = 0.1
         self.vertical_d_gain = 0.05
+
+        self.thrust = 0.0
+        self.lateral_thrust = 0.0
+        self.vertical_thrust = self.vorsteuerung
 
         self.setpoint_buf_len = 5
         self.i_buf_len = 10
@@ -33,18 +38,11 @@ class transControlNode():
         self.setpoint_buf.position.x = [0.0] * self.setpoint_buf_len
         self.setpoint_buf.position.y = [0.0] * self.setpoint_buf_len
         self.setpoint_buf.position.z = [0.0] * self.setpoint_buf_len
-        self.pos_setpoint = Pose()
-        self.pos_setpoint.position.x = 0.0
-        self.pos_setpoint.position.y = 0.0
-        self.pos_setpoint.position.z = -0.5
-        self.pos = self.pos_setpoint
         self.sensor_time = rospy.get_time()
-        # rospy.loginfo(self.setpoint_buf.position.x)
-        # rospy.loginfo(self.i_buf.position.z)
-
-        self.thrust = 0.0
-        self.vertical_thrust = 0.0
-        self.lateral_thrust = 0.0
+        self.pos = Pose()
+        self.pos.position.x = 0.0
+        self.pos.position.y = 0.0
+        self.pos.position.z = 0.0
 
         self.thrust_pub = rospy.Publisher("thrust",
                                           Float64,
@@ -84,6 +82,7 @@ class transControlNode():
                                                self.vor_callback, queue_size=1)
         
         self.trans_control_frequency = 10.0
+        
         rospy.Timer(rospy.Duration(1.0/self.trans_control_frequency), self.trans_control)
 
     def strategy_callback(self, msg):
@@ -173,20 +172,19 @@ class transControlNode():
         
     def trans_control(self, *args):
         if rospy.get_time() - self.sensor_time > 2:
-            #rospy.logwarn("Sensor Timeout")
+            rospy.logwarn("Sensor Timeout")
             self.thrust = 0.0
             self.lateral_thrust = 0.0
             self.vertical_thrust = self.vorsteuerung
             self.publish()
             return
-        # elif self.strategy == "search":
-        #     self.thrust = 0.0
-        #     self.lateral_thrust = 0.0
-        #     self.vertical_thrust = self.vorsteuerung
-        #     self.publish()
-        #     return
+        elif self.strategy == "search":
+            self.thrust = 0.0
+            self.lateral_thrust = 0.0
+            self.vertical_thrust = self.vorsteuerung
+            self.publish()
+            return
         
-        # rospy.loginfo("following")
         i_buf_Append = Pose()
         i_buf_Append.position.x = self.pos.position.x
         i_buf_Append.position.y = self.pos.position.y
@@ -195,7 +193,6 @@ class transControlNode():
                                              i_buf_Append.position,
                                              self.i_buf_len)
 
-        # rospy.loginfo("following")
         self.setGains(True)
         # rospy.loginfo(self.pos.position)
         self.lateral_thrust = -self.getThrust(self.pos.position.x,
@@ -221,9 +218,14 @@ class transControlNode():
 
     def setGains(self, dirXY):
         if dirXY:
-            self.act_p_gain = self.xy_p_gain
-            self.act_i_gain = self.xy_i_gain
-            self.act_d_gain = self.xy_d_gain
+            if self.strategy == "stich":
+                self.act_p_gain = self.xy_p_gain * self.stichFaktor
+                self.act_i_gain = self.xy_i_gain * self.stichFaktor
+                self.act_d_gain = self.xy_d_gain * self.stichFaktor
+            else:
+                self.act_p_gain = self.xy_p_gain
+                self.act_i_gain = self.xy_i_gain
+                self.act_d_gain = self.xy_d_gain
         else:
             self.act_p_gain = self.vertical_p_gain
             self.act_i_gain = self.vertical_i_gain

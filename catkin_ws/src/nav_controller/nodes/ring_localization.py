@@ -27,7 +27,7 @@ p = np.array([tag1, tag2, tag3, tag4])
 tank_bound_lower = np.array([-4.0, 0.0, -1.0])
 tank_bound_upper = np.array([4.0, 4.0, 1.0])
 
-hook_offset = np.array([0.0, -0.1, -0.1])
+hook_offset = np.array([0.0, -0.1, -0.15])
 
 class localizationNode():
     def __init__(self):
@@ -55,12 +55,12 @@ class localizationNode():
             for i in range(4):
                 if dists[i] != 0:
                     self.avg_dist_buf[i].append(dists[i])
-                if len(self.avg_dist_buf[i]) > self.avg_buf_len_dist:
-                    self.avg_dist_buf[i].pop(0)
-                if len(self.avg_dist_buf[i]) > 0:
-                    dists[i] = sum(self.avg_dist_buf[i]) / \
-                            len(self.avg_dist_buf[i])
-            if len(msg.measurements) < 3:
+                    if len(self.avg_dist_buf[i]) > self.avg_buf_len_dist:
+                        self.avg_dist_buf[i].pop(0)
+                    if len(self.avg_dist_buf[i]) > 0:
+                        dists[i] = sum(self.avg_dist_buf[i]) / \
+                                len(self.avg_dist_buf[i])
+            if len([1 for d in dists if d != 0]) < 3:
                 return
             self.x0 = self.optimization(dists, self.x0)
             # self.avg_buf.append(self.x0)

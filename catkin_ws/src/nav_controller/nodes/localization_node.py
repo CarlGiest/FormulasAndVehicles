@@ -21,9 +21,9 @@ for j in range(9):
 
 p = np.array(p)
 
-class localizationNode():
+class localizationNodeLS():
     def __init__(self):
-        rospy.init_node("localizationNode")
+        rospy.init_node("localizationNodeLS")
         self.data_lock = threading.RLock()
         self.range_sub = rospy.Subscriber("ranges", RangeMeasurementArray, self.rangeCallback, queue_size=1)
         self.pos_pub = rospy.Publisher("robot_pos_ls", Pose, queue_size=1)
@@ -47,11 +47,11 @@ class localizationNode():
             for i in range(63):
                 if dists[i] != 0:
                     self.avg_dist_buf[i].append(dists[i])
-                if len(self.avg_dist_buf[i]) > self.avg_buf_len_dist:
-                    self.avg_dist_buf[i].pop(0)
-                if len(self.avg_dist_buf[i]) > 0:
-                    dists[i] = sum(self.avg_dist_buf[i]) / \
-                            len(self.avg_dist_buf[i])
+                    if len(self.avg_dist_buf[i]) > self.avg_buf_len_dist:
+                        self.avg_dist_buf[i].pop(0)
+                    if len(self.avg_dist_buf[i]) > 0:
+                        dists[i] = sum(self.avg_dist_buf[i]) / \
+                                len(self.avg_dist_buf[i])
             self.x0 = self.optimization(dists, self.x0)
             self.avg_buf.append(self.x0)
             if len(self.avg_buf) > self.avg_buf_len:
@@ -81,7 +81,7 @@ class localizationNode():
 
 
 def main():
-    node = localizationNode()
+    node = localizationNodeLS()
     rospy.spin()
 
 

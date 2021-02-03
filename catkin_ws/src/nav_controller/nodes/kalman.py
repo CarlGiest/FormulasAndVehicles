@@ -37,7 +37,6 @@ class localizationNode():
                                           self.depth_callback,
                                           queue_size=1)
         self.groundTruth_sub = rospy.Subscriber("/ground_truth/state", Odometry, self.gt_callback, queue_size=1)
-        self.tag_num_pub = rospy.Publisher("number_tags", Int16, queue_size=1)
         self.z_gt = 0.0
         self.pos_pub = rospy.Publisher("robot_pos", Pose, queue_size=1)
         self.range_est_pub = rospy.Publisher("range_estimates", RangeMeasurementArray, queue_size=1)
@@ -60,9 +59,6 @@ class localizationNode():
                 if measure.id >= 5:
                     id = measure.id-4
                     dists[id-1] = measure.range
-            tagNumerMsg = Int16()
-            tagNumerMsg.data = len([1 for dist in dists if dist != 0])
-            self.tag_num_pub.publish(tagNumerMsg)
             
             (self.x0, self.Sigma0) = kalmanP(dists, self.depth * 1.0e4, self.x0, self.Sigma0)
 

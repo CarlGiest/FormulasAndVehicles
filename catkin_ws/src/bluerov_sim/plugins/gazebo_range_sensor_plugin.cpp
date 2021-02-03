@@ -165,6 +165,12 @@ void RangesPlugin::OnUpdate(const common::UpdateInfo &) {
                                                ->WorldPose()
                                                .Rot()
                                                .RotateVector(z_unit_vector);
+    ignition::math::Vector3d tag_axis_ = world_->ModelByName("ring")
+                                                ->GetChildLink("base_link")
+                                                ->WorldPose() 
+                                                .Rot()
+                                                .RotateVector(z_unit_vector); 
+    // gzmsg << "Tag axis: " << tag_axis_ << "\n";                                              
     // ignition::math::Vector3d pos_ring =
     //               model_->GetLink("ring::base_link")->WorldPose().Pos();
     auto model_ring = world_->ModelByName("ring");
